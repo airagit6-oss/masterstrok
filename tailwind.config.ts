@@ -2,7 +2,12 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -14,8 +19,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Space Grotesk", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -61,26 +66,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        dd: {
-          deep: "hsl(var(--dd-bg-deep))",
-          panel: "hsl(var(--dd-bg-panel))",
-          "panel-alt": "hsl(var(--dd-bg-panel-alt))",
-          hover: "hsl(var(--dd-bg-hover))",
-          success: "hsl(var(--dd-success))",
-          warning: "hsl(var(--dd-warning))",
-          error: "hsl(var(--dd-error))",
-          info: "hsl(var(--dd-info))",
-          "chart-blue": "hsl(var(--dd-chart-blue))",
-          "chart-green": "hsl(var(--dd-chart-green))",
-          "chart-red": "hsl(var(--dd-chart-red))",
-          "chart-yellow": "hsl(var(--dd-chart-yellow))",
-          "chart-purple": "hsl(var(--dd-chart-purple))",
-          "chart-cyan": "hsl(var(--dd-chart-cyan))",
-          "text-primary": "hsl(var(--dd-text-primary))",
-          "text-secondary": "hsl(var(--dd-text-secondary))",
-          "text-dim": "hsl(var(--dd-text-dim))",
-          "border-subtle": "hsl(var(--dd-border-subtle))",
-          "border-strong": "hsl(var(--dd-border-strong))",
+        mp: {
+          success: "hsl(var(--mp-success))",
+          warning: "hsl(var(--mp-warning))",
+          error: "hsl(var(--mp-error))",
+          info: "hsl(var(--mp-info))",
+          gold: "hsl(var(--mp-gold))",
+          purple: "hsl(var(--mp-purple))",
         },
       },
       borderRadius: {
@@ -97,17 +89,12 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "pulse-live": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.4" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse-live": "pulse-live 2s ease-in-out infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
