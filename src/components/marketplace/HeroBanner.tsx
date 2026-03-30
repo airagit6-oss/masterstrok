@@ -15,17 +15,18 @@ export const HeroBanner = () => {
   }, []);
 
   return (
-    <div className="relative h-[480px] w-full overflow-hidden lg:h-[540px]">
-      {/* Background */}
-      <div
-        className="absolute inset-0 transition-all duration-700"
-        style={{ background: slide.thumbnail }}
+    <div className="relative h-[420px] w-full overflow-hidden lg:h-[480px]">
+      {/* Background image */}
+      <img
+        src={slide.thumbnail}
+        alt={slide.name}
+        className="absolute inset-0 h-full w-full object-cover transition-all duration-700"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/30" />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
 
       {/* Content */}
-      <div className="relative mx-auto flex h-full max-w-[1440px] items-center px-6">
+      <div className="relative flex h-full items-center px-6">
         <div className="max-w-xl">
           <span className="mb-3 inline-block rounded-full bg-primary/20 px-3 py-1 text-xs font-medium text-primary">
             {slide.category}
@@ -37,18 +38,18 @@ export const HeroBanner = () => {
             {slide.shortDescription}
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <button className="flex items-center gap-2 rounded-lg mp-gradient-bg px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105">
+            <button className="flex items-center gap-2 rounded-xl mp-gradient-bg px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105">
               <Play className="h-4 w-4" /> Access Now
             </button>
             <Link
               to={`/product/${slide.id}`}
-              className="flex items-center gap-2 rounded-lg border border-border bg-secondary px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+              className="flex items-center gap-2 rounded-xl border border-border bg-secondary px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
             >
               <Eye className="h-4 w-4" /> View Details
             </Link>
             <button
               onClick={() => addToCart(slide)}
-              className="flex items-center gap-2 rounded-lg border border-primary/30 px-6 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+              className="flex items-center gap-2 rounded-xl border border-primary/30 px-6 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
             >
               <ShoppingBag className="h-4 w-4" /> Buy Now
             </button>

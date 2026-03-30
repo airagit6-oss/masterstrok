@@ -1,13 +1,19 @@
+import { useState } from 'react';
 import { Navbar } from '@/components/marketplace/Navbar';
+import { MarketplaceSidebar } from '@/components/marketplace/MarketplaceSidebar';
 import { HeroBanner } from '@/components/marketplace/HeroBanner';
 import { ProductRow } from '@/components/marketplace/ProductRow';
 import { products, sections } from '@/lib/marketplaceData';
 
 const HomePage = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-16">
+      <Navbar onToggleSidebar={() => setSidebarOpen(prev => !prev)} />
+      <MarketplaceSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      <div className={`pt-16 transition-all duration-300 ${sidebarOpen ? 'lg:pl-56' : 'lg:pl-16'}`}>
         <HeroBanner />
         <div className="py-4">
           {sections.map(section => {
@@ -21,6 +27,7 @@ const HomePage = () => {
             );
           })}
         </div>
+
         {/* Footer */}
         <footer className="border-t border-border py-12">
           <div className="mx-auto max-w-[1440px] px-6">
