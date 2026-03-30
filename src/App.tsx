@@ -7,6 +7,10 @@ import { CartProvider } from "@/contexts/CartContext";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import SubscriptionPage from "./pages/SubscriptionPage";
+import SubscribeCheckoutPage from "./pages/SubscribeCheckoutPage";
+import SuccessPage from "./pages/SuccessPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +27,10 @@ const App = () => (
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/category/:slug" element={<HomePage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/subscription" element={<SubscriptionPage />} />
+            <Route path="/subscribe-checkout" element={<SubscribeCheckoutPage />} />
+            <Route path="/success" element={<SuccessPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
