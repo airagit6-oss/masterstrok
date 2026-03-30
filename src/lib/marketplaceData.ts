@@ -1,3 +1,10 @@
+import educationImg from '@/assets/previews/education-1.jpg';
+import medicalImg from '@/assets/previews/medical-1.jpg';
+import hotelImg from '@/assets/previews/hotel-1.jpg';
+import ecommerceImg from '@/assets/previews/ecommerce-1.jpg';
+import servicesImg from '@/assets/previews/services-1.jpg';
+import manufacturingImg from '@/assets/previews/manufacturing-1.jpg';
+
 export interface Product {
   id: string;
   name: string;
@@ -19,19 +26,17 @@ export interface Product {
   subscription: { monthly: number; yearly: number };
 }
 
-const gradients = [
-  'linear-gradient(135deg, hsl(210 100% 20%), hsl(210 100% 40%))',
-  'linear-gradient(135deg, hsl(142 50% 15%), hsl(142 71% 35%))',
-  'linear-gradient(135deg, hsl(270 50% 20%), hsl(270 70% 45%))',
-  'linear-gradient(135deg, hsl(38 60% 18%), hsl(38 92% 42%))',
-  'linear-gradient(135deg, hsl(0 50% 18%), hsl(0 72% 40%))',
-  'linear-gradient(135deg, hsl(186 50% 15%), hsl(186 80% 35%))',
-  'linear-gradient(135deg, hsl(320 50% 18%), hsl(320 70% 40%))',
-  'linear-gradient(135deg, hsl(160 50% 15%), hsl(160 70% 35%))',
-];
+const previewImages: Record<string, string> = {
+  education: educationImg,
+  medical: medicalImg,
+  hotel: hotelImg,
+  ecommerce: ecommerceImg,
+  services: servicesImg,
+  manufacturing: manufacturingImg,
+};
 
 function makeProduct(id: number, name: string, category: string, categorySlug: string, desc: string, price: number, features: string[], modules: string[]): Product {
-  const g = gradients[id % gradients.length];
+  const img = previewImages[categorySlug] || educationImg;
   return {
     id: `prod-${id}`,
     name,
@@ -44,8 +49,8 @@ function makeProduct(id: number, name: string, category: string, categorySlug: s
     rating: 4 + Math.random() * 0.9,
     reviews: 50 + Math.floor(Math.random() * 500),
     users: 500 + Math.floor(Math.random() * 10000),
-    thumbnail: g,
-    screenshots: [g, g, g, g],
+    thumbnail: img,
+    screenshots: [img, img, img, img],
     features,
     modules,
     tags: [category, 'SaaS', 'Premium'],
@@ -97,7 +102,7 @@ export const categories: Category[] = [
 ];
 
 export const sections = [
-  { title: 'Trending Now', filter: (p: Product) => p.status === 'trending' || true },
+  { title: 'Trending Now', filter: (_p: Product) => true },
   { title: 'Education Software', filter: (p: Product) => p.categorySlug === 'education' },
   { title: 'Hospital & Medical', filter: (p: Product) => p.categorySlug === 'medical' },
   { title: 'Hotel & Restaurant', filter: (p: Product) => p.categorySlug === 'hotel' },
