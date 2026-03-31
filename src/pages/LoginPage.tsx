@@ -48,7 +48,7 @@ const LoginPage = () => {
     <div style={{ minHeight: '100vh', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       <div style={{ width: '100%', maxWidth: '380px' }}>
         {/* Boss/User toggle */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '80px', position: 'relative', zIndex: 10 }}>
           <button
             onClick={() => setIsBossLogin(false)}
             style={{
