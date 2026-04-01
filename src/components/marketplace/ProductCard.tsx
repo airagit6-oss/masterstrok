@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Eye, ShoppingCart, ShoppingBag, Zap, Heart, Star, Bookmark } from 'lucide-react';
 import type { Product } from '@/lib/marketplaceData';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Props {
   product: Product;
@@ -11,6 +12,7 @@ interface Props {
 export const ProductCard = ({ product }: Props) => {
   const [hovered, setHovered] = useState(false);
   const { addToCart } = useCart();
+  const { hasSubscription } = useAuth();
 
   return (
     <div
@@ -97,12 +99,13 @@ export const ProductCard = ({ product }: Props) => {
               >
                 <Eye className="h-3.5 w-3.5" /> Details
               </Link>
-              <button
-                onClick={(e) => { e.stopPropagation(); addToCart(product); }}
+              <Link
+                to={hasSubscription ? `/app/${product.id}` : `/checkout?productId=${product.id}`}
                 className="flex flex-1 items-center justify-center gap-1 rounded-lg mp-gradient-bg py-2 text-xs font-semibold text-primary-foreground"
               >
-                <ShoppingBag className="h-3.5 w-3.5" /> Buy Now
-              </button>
+                {hasSubscription ? <Zap className="h-3.5 w-3.5" /> : <ShoppingBag className="h-3.5 w-3.5" />}
+                {hasSubscription ? 'Access' : 'Buy Now'}
+              </Link>
             </div>
           )}
         </div>

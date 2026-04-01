@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +43,9 @@ const LoginPage = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate(isBossLogin ? '/dashboard' : '/');
+    const role = isBossLogin ? 'admin' : 'user';
+    login(email, password, role);
+    navigate(isBossLogin ? '/admin' : '/');
   };
 
   return (
@@ -177,6 +181,15 @@ const LoginPage = () => {
               {isBossLogin ? '🔐 Boss Login' : 'Log in'}
             </button>
           </form>
+
+          {!isBossLogin && (
+            <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '13px', color: '#666' }}>
+              Don't have an account?{' '}
+              <Link to="/signup" style={{ color: '#7ec8e3', fontWeight: 600, textDecoration: 'none' }}>
+                Create Account
+              </Link>
+            </p>
+          )}
         </div>
       </div>
     </div>

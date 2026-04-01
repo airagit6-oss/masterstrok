@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, User, X, Headset, LogIn, Users, Menu } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
@@ -9,8 +10,25 @@ interface NavbarProps {
 
 export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
   const { totalItems, items, showMiniCart, setShowMiniCart, removeFromCart, totalPrice } = useCart();
+  const { isLoggedIn, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+    }
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+    }
+  };
 
   return (
     <>
@@ -34,15 +52,16 @@ export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
 
           {/* Center: Search */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
-            <div className="flex w-full items-center gap-2 rounded-full bg-secondary px-4 py-2">
+            <form onSubmit={handleSearch} className="flex w-full items-center gap-2 rounded-full bg-secondary px-4 py-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
                 className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 placeholder="Search apps, categories, features..."
               />
-            </div>
+            </form>
           </div>
 
           {/* Right */}
@@ -54,7 +73,7 @@ export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
               <Search className="h-4 w-4" />
             </button>
             <Link
-              to="/reseller"
+              to="/reseller-apply"
               className="hidden lg:flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <Users className="h-3.5 w-3.5" />
@@ -85,28 +104,32 @@ export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
                 </span>
               )}
             </Link>
-            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground">
+            <Link
+              to={isLoggedIn ? (isAdmin ? '/admin' : '/dashboard') : '/login'}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground"
+            >
               <User className="h-4 w-4" />
-            </button>
+            </Link>
           </div>
         </div>
 
         {/* Mobile search */}
         {searchOpen && (
           <div className="border-t border-border bg-background px-6 py-3 md:hidden">
-            <div className="flex items-center gap-3 rounded-full bg-secondary px-4 py-2">
+            <form onSubmit={handleSearch} className="flex items-center gap-3 rounded-full bg-secondary px-4 py-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <input
                 autoFocus
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
                 className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 placeholder="Search apps..."
               />
-              <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>
+              <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>
                 <X className="h-4 w-4 text-muted-foreground" />
               </button>
-            </div>
+            </form>
           </div>
         )}
       </nav>

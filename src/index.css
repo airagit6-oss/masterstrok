@@ -133,4 +133,55 @@
   .font-display {
     font-family: var(--font-display);
   }
+
+  /* Admin / Datadog-style panel classes */
+  .dd-panel {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  .dd-badge-success {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: hsl(142 71% 45% / 0.2);
+    color: hsl(142 71% 45%);
+  }
+  .dd-badge-error {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: hsl(0 72% 51% / 0.2);
+    color: hsl(0 72% 51%);
+  }
+  .dd-badge-warning {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: hsl(38 92% 50% / 0.2);
+    color: hsl(38 92% 50%);
+  }
+  .dd-badge-info {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: hsl(210 100% 52% / 0.2);
+    color: hsl(210 100% 52%);
+  }
+  .dd-error {
+    color: hsl(0 72% 51%);
+  }
 }
