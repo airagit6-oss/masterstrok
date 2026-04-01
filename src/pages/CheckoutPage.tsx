@@ -1,13 +1,33 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Lock, CreditCard, ArrowLeft, Shield, Check } from 'lucide-react';
 import { Navbar } from '@/components/marketplace/Navbar';
 import { useCart } from '@/contexts/CartContext';
+import { fetchProduct } from '@/lib/api';
+import type { CartItem } from '@/contexts/CartContext';
+
+const VALID_PLANS = new Set<CartItem['plan']>(['monthly', 'yearly', 'lifetime']);
+function toValidPlan(value: string | null): CartItem['plan'] {
+  return (value && VALID_PLANS.has(value as CartItem['plan'])) ? (value as CartItem['plan']) : 'lifetime';
+}
 
 const CheckoutPage = () => {
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice, clearCart, addToCart } = useCart();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const directProductId = searchParams.get('productId');
+  const directPlan = toValidPlan(searchParams.get('plan'));
+  const hasAutoAdded = useRef(false);
   const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    if (directProductId && items.length === 0 && !hasAutoAdded.current) {
+      hasAutoAdded.current = true;
+      fetchProduct(directProductId)
+        .then(product => addToCart(product, directPlan))
+        .catch(() => {});
+    }
+  }, [directProductId, directPlan, items.length, addToCart]);
 
   const [form, setForm] = useState({
     name: '', email: '',
@@ -35,7 +55,7 @@ const CheckoutPage = () => {
     }, 2000);
   };
 
-  if (items.length === 0) {
+  if (items.length === 0 && !directProductId) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />

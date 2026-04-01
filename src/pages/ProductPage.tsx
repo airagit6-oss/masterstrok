@@ -1,23 +1,28 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Star, ShoppingCart, ShoppingBag, Check, ChevronLeft, ChevronRight,
   Users, Download, Heart, Share2, Calendar, Tag, Shield, Code, Globe,
   Monitor, MessageSquare, ThumbsUp, Reply, ExternalLink, Info, FileText
 } from 'lucide-react';
 import { Navbar } from '@/components/marketplace/Navbar';
-import { products, getReviews } from '@/lib/marketplaceData';
 import { useCart } from '@/contexts/CartContext';
 import { useState } from 'react';
+import { useProduct, useProductReviews, useRelatedProducts } from '@/hooks/useProduct';
 
 const ProductPage = () => {
   const { id } = useParams();
-  const product = products.find(p => p.id === id);
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly' | 'lifetime'>('yearly');
   const [screenshotIdx, setScreenshotIdx] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'features' | 'reviews' | 'comments' | 'support'>('description');
   const [commentText, setCommentText] = useState('');
-  const reviews = getReviews();
+
+  const { data: product, isLoading } = useProduct(id);
+  const { data: reviews = [] } = useProductReviews(id);
+  const { data: related = [] } = useRelatedProducts(id);
+
+  if (isLoading) return null;
 
   if (!product) {
     return (
@@ -33,7 +38,6 @@ const ProductPage = () => {
     );
   }
 
-  const related = products.filter(p => p.categorySlug === product.categorySlug && p.id !== product.id).slice(0, 4);
   const planPrice = selectedPlan === 'monthly' ? product.subscription.monthly : selectedPlan === 'yearly' ? product.subscription.yearly : product.price;
   const planLabel = selectedPlan === 'monthly' ? '/mo' : selectedPlan === 'yearly' ? '/yr' : ' one-time';
   const totalSales = Math.floor(product.users * 1.8);
@@ -460,7 +464,7 @@ const ProductPage = () => {
                   {/* Buttons */}
                   <div className="space-y-2">
                     <button
-                      onClick={() => addToCart(product, selectedPlan)}
+                      onClick={() => navigate(`/checkout?productId=${product.id}&plan=${selectedPlan}`)}
                       className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                     >
                       <ShoppingBag className="h-4 w-4" /> Buy Now
