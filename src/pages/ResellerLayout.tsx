@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { TrendingUp, Users, LayoutDashboard, LogOut, UserPlus, Kanban, BookUser, CreditCard, Package, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { ResellerProvider } from '@/contexts/ResellerContext';
 
 const resellerNav = [
   { to: '/reseller/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -62,9 +63,11 @@ const ResellerLayout = () => {
           </button>
         </div>
       </aside>
-      <main className="flex-1 overflow-auto p-6">
-        <Outlet />
-      </main>
+      <ResellerProvider>
+        <main className="flex-1 overflow-auto p-6">
+          <Outlet />
+        </main>
+      </ResellerProvider>
     </div>
   );
 };

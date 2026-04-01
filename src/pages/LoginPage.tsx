@@ -11,6 +11,7 @@ const LoginPage = () => {
   const [focusedField, setFocusedField] = useState<'none' | 'email' | 'password'>('none');
   const [eyeState, setEyeState] = useState<'open' | 'closed'>('open');
   const [isBossLogin, setIsBossLogin] = useState(false);
+  const [isResellerLogin, setIsResellerLogin] = useState(false);
   const blinkTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const doBlink = useCallback((duration = 150) => {
@@ -43,9 +44,9 @@ const LoginPage = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const role = isBossLogin ? 'admin' : 'user';
+    const role = isBossLogin ? 'admin' : isResellerLogin ? 'reseller' : 'user';
     login(email, password, role);
-    navigate(isBossLogin ? '/admin' : '/');
+    navigate(isBossLogin ? '/admin' : isResellerLogin ? '/reseller/dashboard' : '/');
   };
 
   return (
@@ -54,16 +55,25 @@ const LoginPage = () => {
         {/* Boss/User toggle */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '80px', position: 'relative', zIndex: 10 }}>
           <button
-            onClick={() => setIsBossLogin(false)}
+            onClick={() => { setIsBossLogin(false); setIsResellerLogin(false); }}
             style={{
               padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer',
-              background: !isBossLogin ? '#7ec8e3' : '#333', color: !isBossLogin ? '#fff' : '#aaa',
+              background: !isBossLogin && !isResellerLogin ? '#7ec8e3' : '#333', color: !isBossLogin && !isResellerLogin ? '#fff' : '#aaa',
             }}
           >
             User Login
           </button>
           <button
-            onClick={() => setIsBossLogin(true)}
+            onClick={() => { setIsResellerLogin(true); setIsBossLogin(false); }}
+            style={{
+              padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer',
+              background: isResellerLogin ? '#7c3aed' : '#333', color: isResellerLogin ? '#fff' : '#aaa',
+            }}
+          >
+            Reseller Login
+          </button>
+          <button
+            onClick={() => { setIsBossLogin(true); setIsResellerLogin(false); }}
             style={{
               padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer',
               background: isBossLogin ? '#d4a017' : '#333', color: isBossLogin ? '#000' : '#aaa',
@@ -110,6 +120,9 @@ const LoginPage = () => {
               <path d="M36 76 Q56 88 76 76" fill="#daedf7" />
               {isBossLogin && (
                 <text x="56" y="14" textAnchor="middle" fontSize="18">👑</text>
+              )}
+              {isResellerLogin && !isBossLogin && (
+                <text x="56" y="14" textAnchor="middle" fontSize="18">🤝</text>
               )}
             </svg>
           </div>
@@ -172,13 +185,17 @@ const LoginPage = () => {
               style={{
                 width: '100%', height: '44px', borderRadius: '6px', border: 'none', cursor: 'pointer',
                 fontSize: '15px', fontWeight: 600, color: '#fff',
-                background: isBossLogin ? 'linear-gradient(135deg, #d4a017, #b8860b)' : '#7ec8e3',
+                background: isBossLogin
+                  ? 'linear-gradient(135deg, #d4a017, #b8860b)'
+                  : isResellerLogin
+                    ? 'linear-gradient(135deg, #7c3aed, #5b21b6)'
+                    : '#7ec8e3',
                 transition: 'opacity 0.2s',
               }}
               onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
-              {isBossLogin ? '🔐 Boss Login' : 'Log in'}
+              {isBossLogin ? '🔐 Boss Login' : isResellerLogin ? '🤝 Reseller Login' : 'Log in'}
             </button>
           </form>
 
