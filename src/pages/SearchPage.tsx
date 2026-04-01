@@ -4,12 +4,10 @@ import { Navbar } from '@/components/marketplace/Navbar';
 import { ProductCard } from '@/components/marketplace/ProductCard';
 import { products, categories } from '@/lib/marketplaceData';
 import { Search } from 'lucide-react';
-import { useState } from 'react';
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const results = useMemo(() => {
     if (!query.trim()) return products;
@@ -31,7 +29,7 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar onToggleSidebar={() => setSidebarOpen(prev => !prev)} />
+      <Navbar />
       <div className="pt-20 px-6 max-w-[1440px] mx-auto">
         <div className="mb-6 flex items-center gap-3">
           <Search className="h-5 w-5 text-muted-foreground" />
