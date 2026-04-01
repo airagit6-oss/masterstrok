@@ -13,6 +13,7 @@ import SubscriptionGuard from "@/components/SubscriptionGuard";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import HomePage from "./pages/HomePage";
+import CategoryPage from "./pages/CategoryPage";
 import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -84,9 +85,9 @@ const App = () => (
               <Route path="/reseller-apply" element={<ResellerApplyPage />} />
 
               {/* Category hierarchy (macro, macro/sub, macro/sub/micro) */}
-              <Route path="/category/:macro" element={<HomePage />} />
-              <Route path="/category/:macro/:sub" element={<HomePage />} />
-              <Route path="/category/:macro/:sub/:micro" element={<HomePage />} />
+              <Route path="/category/:macro" element={<CategoryPage />} />
+              <Route path="/category/:macro/:sub" element={<CategoryPage />} />
+              <Route path="/category/:macro/:sub/:micro" element={<CategoryPage />} />
 
               {/* Product */}
               <Route path="/product/:id" element={<ProductPage />} />

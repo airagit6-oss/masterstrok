@@ -1,5 +1,6 @@
-import { products as mockProducts, getReviews as mockGetReviews } from './marketplaceData';
+import { products as mockProducts, getReviews as mockGetReviews, sections } from './marketplaceData';
 import type { Product, Review } from './marketplaceData';
+import { kpiData, generateLogs, generateLog, generateUsers, generateApps } from './mockData';
 
 // Versioned API base — all new endpoints use /api/v1
 // Legacy marketplace endpoints remain on /api for backward compatibility.
@@ -135,3 +136,149 @@ export async function apiCheckout(
     body: JSON.stringify({ productId, planId }),
   });
 }
+
+// ── Marketplace endpoints ──────────────────────────────────────────────────
+
+// GET /api/products/featured
+export async function fetchFeaturedProducts(): Promise<Product[]> {
+  try {
+    return await apiFetch<Product[]>(`${API_BASE}/products/featured`);
+  } catch {
+    return mockProducts.filter(p => p.status === 'featured' || p.status === 'trending').slice(0, 12);
+  }
+}
+
+export interface ProductFilters {
+  macro?: string;
+  sub?: string;
+  micro?: string;
+  q?: string;
+}
+
+// GET /api/products?macro=&sub=&micro=
+export async function fetchProducts(filters: ProductFilters = {}): Promise<Product[]> {
+  try {
+    const params = new URLSearchParams();
+    if (filters.macro) params.set('macro', filters.macro);
+    if (filters.sub) params.set('sub', filters.sub);
+    if (filters.micro) params.set('micro', filters.micro);
+    return await apiFetch<Product[]>(`${API_BASE}/products?${params.toString()}`);
+  } catch {
+    let results = [...mockProducts];
+    if (filters.macro) {
+      results = results.filter(p =>
+        p.categorySlug === filters.macro ||
+        p.category.toLowerCase().replace(/\s+/g, '-') === filters.macro
+      );
+    }
+    return results;
+  }
+}
+
+// GET /api/search?q=
+export async function fetchSearchResults(q: string): Promise<Product[]> {
+  if (!q.trim()) return mockProducts;
+  try {
+    const params = new URLSearchParams({ q });
+    return await apiFetch<Product[]>(`${API_BASE}/search?${params.toString()}`);
+  } catch {
+    const lower = q.toLowerCase();
+    return mockProducts.filter(p =>
+      p.name.toLowerCase().includes(lower) ||
+      p.category.toLowerCase().includes(lower) ||
+      p.shortDescription.toLowerCase().includes(lower) ||
+      p.tags.some(t => t.toLowerCase().includes(lower))
+    );
+  }
+}
+
+// ── User data endpoints ────────────────────────────────────────────────────
+
+export interface UserOrder {
+  id: string;
+  product: string;
+  plan: string;
+  amount: number;
+  date: string;
+  status: string;
+}
+
+// GET /api/user/orders
+export async function fetchUserOrders(): Promise<UserOrder[]> {
+  try {
+    return await apiFetch<UserOrder[]>(`${API_BASE}/user/orders`);
+  } catch {
+    return [
+      { id: 'ORD-001', product: 'EduFlow Pro', plan: 'Yearly', amount: 290, date: '2026-03-15', status: 'Active' },
+      { id: 'ORD-002', product: 'HotelNest', plan: 'Monthly', amount: 79, date: '2026-03-01', status: 'Active' },
+      { id: 'ORD-003', product: 'ShopEngine', plan: 'Lifetime', amount: 499, date: '2026-01-20', status: 'Completed' },
+    ];
+  }
+}
+
+export interface UserApp {
+  name: string;
+  status: 'Running' | 'Stopped';
+  activeUsers: number;
+  requestsMin: number;
+  errorPercent: number;
+  sparkline: { t: number; v: number }[];
+}
+
+// GET /api/user/apps
+export async function fetchUserApps(): Promise<UserApp[]> {
+  try {
+    return await apiFetch<UserApp[]>(`${API_BASE}/user/apps`);
+  } catch {
+    return generateApps();
+  }
+}
+
+// GET /api/user/subscription
+export async function fetchUserSubscription(): Promise<{ active: boolean; plan?: string; expiresAt?: string }> {
+  try {
+    return await apiFetch<{ active: boolean; plan?: string; expiresAt?: string }>(`${API_BASE}/user/subscription`);
+  } catch {
+    return { active: false };
+  }
+}
+
+// ── Admin data endpoints ───────────────────────────────────────────────────
+
+export type KpiSnapshot = ReturnType<typeof kpiData>;
+
+// GET /api/admin/metrics
+export async function fetchAdminMetrics(): Promise<KpiSnapshot> {
+  try {
+    return await apiFetch<KpiSnapshot>(`${API_BASE}/admin/metrics`);
+  } catch {
+    return kpiData();
+  }
+}
+
+export type LogEntry = ReturnType<typeof generateLog>;
+
+// GET /api/admin/logs
+export async function fetchAdminLogs(limit = 80): Promise<LogEntry[]> {
+  try {
+    const params = new URLSearchParams({ limit: String(limit) });
+    return await apiFetch<LogEntry[]>(`${API_BASE}/admin/logs?${params.toString()}`);
+  } catch {
+    return generateLogs(limit);
+  }
+}
+
+export type UserEntry = ReturnType<typeof generateUsers>[number];
+
+// GET /api/admin/users
+export async function fetchAdminUsers(count = 30): Promise<UserEntry[]> {
+  try {
+    return await apiFetch<UserEntry[]>(`${API_BASE}/admin/users`);
+  } catch {
+    return generateUsers(count);
+  }
+}
+
+// ── Marketplace sections helper ────────────────────────────────────────────
+export { sections };
+

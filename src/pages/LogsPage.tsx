@@ -1,17 +1,24 @@
 import { useState, useEffect, useRef } from "react";
-import { generateLogs, generateLog } from "@/lib/mockData";
+import { generateLog } from "@/lib/mockData";
+import { useAdminLogs } from "@/hooks/useAdminData";
 import { cn } from "@/lib/utils";
 import { Search, Filter } from "lucide-react";
+import type { LogEntry } from "@/lib/api";
 
 export default function LogsPage() {
-  const [logs, setLogs] = useState(generateLogs(80));
+  const { data: fetchedLogs = [] } = useAdminLogs(80);
+  const [localLogs, setLocalLogs] = useState<LogEntry[]>([]);
   const [filter, setFilter] = useState("");
   const [eventFilter, setEventFilter] = useState("all");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (fetchedLogs.length > 0) setLocalLogs(fetchedLogs);
+  }, [fetchedLogs]);
+
+  useEffect(() => {
     const iv = setInterval(() => {
-      setLogs(prev => [...prev.slice(-200), generateLog(prev.length)]);
+      setLocalLogs(prev => [...prev.slice(-200), generateLog(prev.length)]);
     }, 2000);
     return () => clearInterval(iv);
   }, []);
@@ -20,9 +27,9 @@ export default function LogsPage() {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [logs]);
+  }, [localLogs]);
 
-  const filtered = logs.filter(l => {
+  const filtered = localLogs.filter(l => {
     const matchText = !filter || l.userId.includes(filter) || l.appName.toLowerCase().includes(filter.toLowerCase()) || l.message.toLowerCase().includes(filter.toLowerCase());
     const matchEvent = eventFilter === "all" || l.eventType === eventFilter;
     return matchText && matchEvent;
@@ -30,7 +37,6 @@ export default function LogsPage() {
 
   return (
     <div className="flex flex-col h-full gap-3">
-      {/* Filters */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -62,7 +68,6 @@ export default function LogsPage() {
         </div>
       </div>
 
-      {/* Logs Table */}
       <div className="dd-panel flex-1 flex flex-col min-h-0">
         <div className="grid grid-cols-[140px_100px_100px_120px_70px_1fr] gap-2 px-3 py-2 border-b border-border text-xs text-muted-foreground uppercase tracking-wider font-medium">
           <span>Timestamp</span>

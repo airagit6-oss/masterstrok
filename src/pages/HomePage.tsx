@@ -3,10 +3,13 @@ import { Navbar } from '@/components/marketplace/Navbar';
 import { MarketplaceSidebar } from '@/components/marketplace/MarketplaceSidebar';
 import { HeroBanner } from '@/components/marketplace/HeroBanner';
 import { ProductRow } from '@/components/marketplace/ProductRow';
-import { products, sections } from '@/lib/marketplaceData';
+import { sections, products as fallbackProducts } from '@/lib/marketplaceData';
+import { useFeaturedProducts } from '@/hooks/useProducts';
 
 const HomePage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { data: apiProducts } = useFeaturedProducts();
+  const products = apiProducts ?? fallbackProducts;
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,7 +69,7 @@ const HomePage = () => {
               </div>
             </div>
             <div className="mt-8 border-t border-border pt-6 text-center">
-              <p className="text-xs text-muted-foreground">© 2026 SaaSHub. All rights reserved. Ultra Premium Software Marketplace.</p>
+              <p className="text-xs text-muted-foreground">&copy; 2026 SaaSHub. All rights reserved. Ultra Premium Software Marketplace.</p>
             </div>
           </div>
         </footer>

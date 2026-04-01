@@ -1,18 +1,19 @@
 import { Link } from 'react-router-dom';
 import { Package, ExternalLink } from 'lucide-react';
-
-const mockOrders = [
-  { id: 'ORD-001', product: 'EduFlow Pro', plan: 'Yearly', amount: 290, date: '2026-03-15', status: 'Active' },
-  { id: 'ORD-002', product: 'HotelNest', plan: 'Monthly', amount: 79, date: '2026-03-01', status: 'Active' },
-  { id: 'ORD-003', product: 'ShopEngine', plan: 'Lifetime', amount: 499, date: '2026-01-20', status: 'Completed' },
-];
+import { useUserOrders } from '@/hooks/useUserData';
 
 const OrdersPage = () => {
+  const { data: orders = [], isLoading } = useUserOrders();
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Orders</h1>
 
-      {mockOrders.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <span className="text-sm text-muted-foreground">Loading orders…</span>
+        </div>
+      ) : orders.length === 0 ? (
         <div className="flex flex-col items-center py-24 text-center">
           <Package className="mb-4 h-12 w-12 text-muted-foreground/30" />
           <p className="text-lg font-medium text-foreground">No orders yet</p>
@@ -35,7 +36,7 @@ const OrdersPage = () => {
               </tr>
             </thead>
             <tbody>
-              {mockOrders.map(order => (
+              {orders.map(order => (
                 <tr key={order.id} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
                   <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{order.id}</td>
                   <td className="px-4 py-3 font-medium text-foreground">{order.product}</td>
@@ -67,3 +68,4 @@ const OrdersPage = () => {
 };
 
 export default OrdersPage;
+

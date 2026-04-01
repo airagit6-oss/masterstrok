@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
-import { generateUsers } from "@/lib/mockData";
+import { useAdminUsers } from "@/hooks/useAdminData";
 import { cn } from "@/lib/utils";
+import type { UserEntry } from "@/lib/api";
 
 export default function UsersPage() {
-  const [users, setUsers] = useState(generateUsers(30));
+  const { data: fetchedUsers = [] } = useAdminUsers(30);
+  const [users, setUsers] = useState<UserEntry[]>([]);
 
   useEffect(() => {
+    if (fetchedUsers.length > 0) setUsers(fetchedUsers);
+  }, [fetchedUsers]);
+
+  useEffect(() => {
+    if (users.length === 0) return;
     const iv = setInterval(() => {
       setUsers(prev => prev.map(u => ({
         ...u,
@@ -14,7 +21,7 @@ export default function UsersPage() {
       })));
     }, 4000);
     return () => clearInterval(iv);
-  }, []);
+  }, [users.length]);
 
   const liveCount = users.filter(u => u.status === 'live').length;
 

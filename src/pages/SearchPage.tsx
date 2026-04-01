@@ -1,31 +1,44 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Navbar } from '@/components/marketplace/Navbar';
 import { ProductCard } from '@/components/marketplace/ProductCard';
-import { products, categories } from '@/lib/marketplaceData';
+import { products as fallbackProducts, categories } from '@/lib/marketplaceData';
+import { useSearch } from '@/hooks/useProducts';
 import { Search } from 'lucide-react';
+
+function useDebounce(value: string, delay = 350) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
+  const debouncedQuery = useDebounce(query);
+
+  const { data: apiResults } = useSearch(debouncedQuery);
 
   const results = useMemo(() => {
-    if (!query.trim()) return products;
-    const q = query.toLowerCase();
-    return products.filter(p =>
+    if (apiResults) return apiResults;
+    if (!debouncedQuery.trim()) return fallbackProducts;
+    const q = debouncedQuery.toLowerCase();
+    return fallbackProducts.filter(p =>
       p.name.toLowerCase().includes(q) ||
       p.category.toLowerCase().includes(q) ||
       p.shortDescription.toLowerCase().includes(q) ||
       p.tags.some(t => t.toLowerCase().includes(q))
     );
-  }, [query]);
+  }, [apiResults, debouncedQuery]);
 
-  // Group category matches
   const categoryMatches = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
+    if (!debouncedQuery.trim()) return [];
+    const q = debouncedQuery.toLowerCase();
     return categories.filter(c => c.name.toLowerCase().includes(q) || c.slug.includes(q));
-  }, [query]);
+  }, [debouncedQuery]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -35,7 +48,7 @@ const SearchPage = () => {
           <Search className="h-5 w-5 text-muted-foreground" />
           <h1 className="text-xl font-semibold text-foreground">
             {query ? (
-              <>Results for <span className="text-primary">"{query}"</span></>
+              <>Results for <span className="text-primary">&ldquo;{query}&rdquo;</span></>
             ) : (
               'All Products'
             )}

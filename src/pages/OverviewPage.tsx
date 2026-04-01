@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { MetricPanel } from "@/components/dashboard/MetricPanel";
-import { kpiData, generateTimeSeries } from "@/lib/mockData";
+import { generateTimeSeries } from "@/lib/mockData";
+import { useAdminMetrics } from "@/hooks/useAdminData";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Bar, BarChart, Line, LineChart, ComposedChart } from "recharts";
 
 const chartTooltipStyle = {
@@ -11,7 +12,7 @@ const chartTooltipStyle = {
 };
 
 export default function OverviewPage() {
-  const [kpi, setKpi] = useState(kpiData());
+  const { data: kpi } = useAdminMetrics();
   const [usersData] = useState(generateTimeSeries(30, 8000, 15000));
   const [revenueData] = useState(generateTimeSeries(30, 1500, 4000));
   const [appUsageData] = useState(() => ['WebApp', 'Mobile', 'API', 'Analytics', 'Auth', 'CDN'].map(n => ({
@@ -19,14 +20,11 @@ export default function OverviewPage() {
   })));
   const [errorData] = useState(generateTimeSeries(30, 0, 8));
   const [latencyData] = useState(generateTimeSeries(30, 20, 300));
-  const [systemData] = useState(() => generateTimeSeries(30, 30, 90).map((d, i) => ({
+  const [systemData] = useState(() => generateTimeSeries(30, 30, 90).map((d) => ({
     ...d, ram: Math.round(40 + Math.random() * 40), cpu: d.value
   })));
 
-  useEffect(() => {
-    const iv = setInterval(() => setKpi(kpiData()), 5000);
-    return () => clearInterval(iv);
-  }, []);
+  if (!kpi) return null;
 
   return (
     <div className="space-y-4">
