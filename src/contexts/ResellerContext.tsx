@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useAuth } from './AuthContext';
+import { audit } from '@/lib/auditLog';
+import { activity } from '@/lib/activityTimeline';
+import { notify } from '@/lib/notifications';
 
 export interface ManagedUser {
   id: string;
@@ -100,6 +103,9 @@ export const ResellerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         };
         const updated = [newUser, ...prev];
         persist(updated);
+        audit.createUser(resellerId, newUser.id, { name: newUser.name, email: newUser.email });
+        activity.userSubscribed(resellerId, newUser.id, newUser.assignedProduct);
+        notify.newLead(resellerId, newUser.name);
         return updated;
       });
     },

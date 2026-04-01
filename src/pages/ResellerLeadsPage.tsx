@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { UserPlus, Search, Filter } from 'lucide-react';
+import { activity } from '@/lib/activityTimeline';
+import { notify } from '@/lib/notifications';
+import { useAuth } from '@/contexts/AuthContext';
 
 type LeadStatus = 'New Lead' | 'Contacted' | 'Qualified' | 'Converted';
 
@@ -37,6 +40,9 @@ const emptyLead = (): Omit<Lead, 'id' | 'createdAt'> => ({
 });
 
 const ResellerLeadsPage = () => {
+  const { user } = useAuth();
+  const resellerId = user?.id ?? 'anonymous';
+  const userId = user?.id ?? 'anonymous';
   const [leads, setLeads] = useState<Lead[]>(initialLeads);
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<LeadStatus | 'All'>('All');
@@ -58,12 +64,16 @@ const ResellerLeadsPage = () => {
       createdAt: new Date().toISOString().split('T')[0],
     };
     setLeads(prev => [newLead, ...prev]);
+    activity.leadCreated(resellerId, userId, newLead.name);
+    notify.newLead(resellerId, newLead.name);
     setForm(emptyLead());
     setShowModal(false);
   };
 
   const updateStatus = (id: string, status: LeadStatus) => {
+    const lead = leads.find(l => l.id === id);
     setLeads(prev => prev.map(l => l.id === id ? { ...l, status } : l));
+    if (lead) activity.leadStatusChanged(resellerId, userId, lead.name, status);
   };
 
   return (

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Plus, Power, PowerOff } from 'lucide-react';
+import { audit } from '@/lib/auditLog';
+import { useAuth } from '@/contexts/AuthContext';
 
 type SubStatus = 'Active' | 'Expired' | 'Disabled';
 
@@ -39,6 +41,9 @@ const emptyForm = () => ({
 });
 
 const ResellerSubscriptionsPage = () => {
+  const { user } = useAuth();
+  const resellerId = user?.id ?? 'anonymous';
+  const userId = user?.id ?? 'anonymous';
   const [subs, setSubs] = useState<Subscription[]>(initialSubs);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(emptyForm());
@@ -46,7 +51,9 @@ const ResellerSubscriptionsPage = () => {
   const toggleStatus = (id: string) => {
     setSubs(prev => prev.map(s => {
       if (s.id !== id) return s;
-      return { ...s, status: s.status === 'Active' ? 'Disabled' : 'Active' };
+      const updated = { ...s, status: s.status === 'Active' ? 'Disabled' : 'Active' } as Subscription;
+      audit.updateSubscription(resellerId, userId, id, { status: updated.status });
+      return updated;
     }));
   };
 
@@ -58,6 +65,7 @@ const ResellerSubscriptionsPage = () => {
       status: 'Active',
     };
     setSubs(prev => [newSub, ...prev]);
+    audit.updateSubscription(resellerId, userId, newSub.id, { action: 'create', product: newSub.productName, plan: newSub.plan });
     setForm(emptyForm());
     setShowModal(false);
   };
