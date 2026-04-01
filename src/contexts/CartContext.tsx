@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { Product } from '@/lib/marketplaceData';
 
-interface CartItem {
+export interface CartItem {
   product: Product;
   quantity: number;
   plan: 'monthly' | 'yearly' | 'lifetime';
