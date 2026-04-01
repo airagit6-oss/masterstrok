@@ -253,3 +253,98 @@ CREATE TABLE reseller_earnings (
 -- reseller_contacts   → reseller_leads         (N:1, optional link)
 -- reseller_users      → products               (N:1)
 -- reseller_subscriptions → products            (N:1)
+
+-- ============================================================
+-- PRODUCTION MODULES EXTENSION
+-- ============================================================
+
+-- AUDIT LOGS
+CREATE TABLE audit_logs (
+  id          VARCHAR(36) PRIMARY KEY,
+  reseller_id VARCHAR(36),
+  user_id     VARCHAR(36),
+  action      VARCHAR(100) NOT NULL,
+  entity_type VARCHAR(100),
+  entity_id   VARCHAR(36),
+  meta        JSON,
+  timestamp   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (reseller_id) REFERENCES resellers(id) ON DELETE SET NULL,
+  FOREIGN KEY (user_id)     REFERENCES users(id)     ON DELETE SET NULL
+);
+
+-- ROLES
+CREATE TABLE roles (
+  id   VARCHAR(36) PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL
+);
+
+-- USER ROLES (many-to-many)
+CREATE TABLE user_roles (
+  user_id VARCHAR(36) NOT NULL,
+  role_id VARCHAR(36) NOT NULL,
+  PRIMARY KEY (user_id, role_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+
+-- NOTIFICATIONS
+CREATE TABLE notifications (
+  id          VARCHAR(36) PRIMARY KEY,
+  reseller_id VARCHAR(36),
+  type        VARCHAR(100) NOT NULL,
+  message     TEXT NOT NULL,
+  status      ENUM('unread','read') NOT NULL DEFAULT 'unread',
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (reseller_id) REFERENCES resellers(id) ON DELETE CASCADE
+);
+
+-- FEATURE FLAGS
+CREATE TABLE feature_flags (
+  id           VARCHAR(36) PRIMARY KEY,
+  reseller_id  VARCHAR(36),
+  feature_name VARCHAR(100) NOT NULL,
+  enabled      TINYINT(1)   NOT NULL DEFAULT 0,
+  UNIQUE KEY uq_flag (reseller_id, feature_name),
+  FOREIGN KEY (reseller_id) REFERENCES resellers(id) ON DELETE CASCADE
+);
+
+-- ACTIVITY LOGS
+CREATE TABLE activity_logs (
+  id          VARCHAR(36) PRIMARY KEY,
+  reseller_id VARCHAR(36),
+  user_id     VARCHAR(36),
+  activity    VARCHAR(500) NOT NULL,
+  timestamp   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (reseller_id) REFERENCES resellers(id) ON DELETE SET NULL,
+  FOREIGN KEY (user_id)     REFERENCES users(id)     ON DELETE SET NULL
+);
+
+-- FILE STORAGE
+CREATE TABLE files (
+  id          VARCHAR(36) PRIMARY KEY,
+  reseller_id VARCHAR(36),
+  name        VARCHAR(255) NOT NULL,
+  url         TEXT NOT NULL,
+  type        VARCHAR(100),
+  size_bytes  BIGINT DEFAULT 0,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (reseller_id) REFERENCES resellers(id) ON DELETE CASCADE
+);
+
+-- SEED: default roles
+INSERT IGNORE INTO roles (id, name) VALUES
+  ('role_admin', 'admin'),
+  ('role_staff', 'staff');
+
+-- ============================================================
+-- PRODUCTION MODULES RELATIONS SUMMARY
+-- ============================================================
+-- users        → audit_logs      (1:N, nullable)
+-- resellers    → audit_logs      (1:N, nullable)
+-- users        → user_roles      (1:N)
+-- roles        → user_roles      (1:N)
+-- resellers    → notifications   (1:N)
+-- resellers    → feature_flags   (1:N)
+-- resellers    → activity_logs   (1:N, nullable)
+-- users        → activity_logs   (1:N, nullable)
+-- resellers    → files           (1:N)
