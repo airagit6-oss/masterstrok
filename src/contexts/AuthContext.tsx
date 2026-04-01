@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { audit } from '@/lib/auditLog';
 
 interface AuthUser {
   id: string;
@@ -42,16 +43,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = useCallback((email: string, _password: string, role: 'user' | 'admin' | 'reseller' = 'user') => {
     const newUser: AuthUser = {
-      id: 'u_' + Math.random().toString(36).slice(2),
+      id: 'u_' + crypto.randomUUID().replace(/-/g, '').slice(0, 9),
       name: email.split('@')[0],
       email,
       role,
     };
     setUser(newUser);
     localStorage.setItem(AUTH_KEY, JSON.stringify(newUser));
+    audit.login(newUser.id, { email, role });
   }, []);
 
   const logout = useCallback(() => {
+    const current = loadAuth();
+    if (current) audit.logout(current.id);
     setUser(null);
     setHasSubscription(false);
     localStorage.removeItem(AUTH_KEY);
