@@ -3,15 +3,11 @@ import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [focusedField, setFocusedField] = useState<'none' | 'email' | 'password' | 'confirm' | 'name'>('none');
+  const [focusedField, setFocusedField] = useState<'none' | 'email' | 'password'>('none');
   const [eyeState, setEyeState] = useState<'open' | 'closed'>('open');
-  const [error, setError] = useState('');
   const blinkTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const doBlink = useCallback((duration = 150) => {
@@ -21,7 +17,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     const scheduleNext = () => {
-      const isPasswordFocused = focusedField === 'password' || focusedField === 'confirm';
+      const isPasswordFocused = focusedField === 'password';
       const minDelay = isPasswordFocused ? 4000 : 2500;
       const maxDelay = isPasswordFocused ? 6000 : 4000;
       const delay = minDelay + Math.random() * (maxDelay - minDelay);
@@ -40,20 +36,9 @@ const LoginPage = () => {
 
   const handleMascotHover = () => doBlink(140);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (mode === 'signup') {
-      if (!fullName.trim()) { setError('Name is required'); return; }
-      if (!email.trim()) { setError('Email is required'); return; }
-      if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
-      if (password !== confirmPassword) { setError('Passwords do not match'); return; }
-      // Signup success - navigate to home
-      navigate('/');
-    } else {
-      if (!email.trim() || !password.trim()) { setError('Please fill all fields'); return; }
-      navigate('/');
-    }
+    navigate('/');
   };
 
   return (
@@ -111,29 +96,7 @@ const LoginPage = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-            {/* Name (signup only) */}
-            {mode === 'signup' && (
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: '#333', marginBottom: '5px' }}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={e => setFullName(e.target.value)}
-                  onFocus={() => setFocusedField('name')}
-                  onBlur={() => setFocusedField('none')}
-                  placeholder="Your full name"
-                  style={{
-                    width: '100%', height: '40px', padding: '0 10px', fontSize: '14px',
-                    border: '1.5px solid', borderColor: focusedField === 'name' ? '#7ec8e3' : '#ccc',
-                    borderRadius: '4px', outline: 'none', boxSizing: 'border-box', color: '#333', background: '#fff',
-                  }}
-                />
-              </div>
-            )}
-
+          <form onSubmit={handleLogin} style={{ marginTop: '20px' }}>
             {/* Email */}
             <div style={{ marginBottom: '14px' }}>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: '#333', marginBottom: '5px' }}>
@@ -147,15 +110,23 @@ const LoginPage = () => {
                 onBlur={() => setFocusedField('none')}
                 placeholder="email@domain.com"
                 style={{
-                  width: '100%', height: '40px', padding: '0 10px', fontSize: '14px',
-                  border: '1.5px solid', borderColor: focusedField === 'email' ? '#7ec8e3' : '#ccc',
-                  borderRadius: '4px', outline: 'none', boxSizing: 'border-box', color: '#333', background: '#fff',
+                  width: '100%',
+                  height: '40px',
+                  padding: '0 10px',
+                  fontSize: '14px',
+                  border: '1.5px solid',
+                  borderColor: focusedField === 'email' ? '#7ec8e3' : '#ccc',
+                  borderRadius: '4px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  color: '#333',
+                  background: '#fff',
                 }}
               />
             </div>
 
             {/* Password */}
-            <div style={{ marginBottom: mode === 'signup' ? '14px' : '20px' }}>
+            <div style={{ marginBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
                 <label style={{ fontSize: '14px', fontWeight: 600, color: '#333' }}>Password</label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#666', cursor: 'pointer' }}>
@@ -175,64 +146,38 @@ const LoginPage = () => {
                 onFocus={() => setFocusedField('password')}
                 onBlur={() => setFocusedField('none')}
                 style={{
-                  width: '100%', height: '40px', padding: '0 10px', fontSize: '14px',
-                  border: '1.5px solid', borderColor: focusedField === 'password' ? '#7ec8e3' : '#ccc',
-                  borderRadius: '4px', outline: 'none', boxSizing: 'border-box', color: '#333', background: '#fff',
+                  width: '100%',
+                  height: '40px',
+                  padding: '0 10px',
+                  fontSize: '14px',
+                  border: '1.5px solid',
+                  borderColor: focusedField === 'password' ? '#7ec8e3' : '#ccc',
+                  borderRadius: '4px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  color: '#333',
+                  background: '#fff',
                 }}
               />
             </div>
 
-            {/* Confirm Password (signup only) */}
-            {mode === 'signup' && (
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: '#333', marginBottom: '5px' }}>
-                  Confirm Password
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  onFocus={() => setFocusedField('confirm')}
-                  onBlur={() => setFocusedField('none')}
-                  style={{
-                    width: '100%', height: '40px', padding: '0 10px', fontSize: '14px',
-                    border: '1.5px solid', borderColor: focusedField === 'confirm' ? '#7ec8e3' : '#ccc',
-                    borderRadius: '4px', outline: 'none', boxSizing: 'border-box', color: '#333', background: '#fff',
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Error */}
-            {error && (
-              <div style={{ color: '#e74c3c', fontSize: '13px', marginBottom: '10px', textAlign: 'center' }}>
-                {error}
-              </div>
-            )}
-
-            {/* Submit Button */}
+            {/* Login Button */}
             <button
               type="submit"
               style={{
-                width: '100%', height: '42px', borderRadius: '4px', border: 'none',
-                cursor: 'pointer', fontSize: '15px', fontWeight: 600, color: '#fff', background: '#7ec8e3',
+                width: '100%',
+                height: '42px',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '15px',
+                fontWeight: 600,
+                color: '#fff',
+                background: '#7ec8e3',
               }}
             >
-              {mode === 'login' ? 'Log in' : 'Sign up'}
+              Log in
             </button>
-
-            {/* Toggle */}
-            <div style={{ textAlign: 'center', marginTop: '14px', fontSize: '13px', color: '#666' }}>
-              {mode === 'login' ? (
-                <>Don't have an account?{' '}
-                  <span onClick={() => { setMode('signup'); setError(''); }} style={{ color: '#7ec8e3', cursor: 'pointer', fontWeight: 600 }}>Sign up</span>
-                </>
-              ) : (
-                <>Already have an account?{' '}
-                  <span onClick={() => { setMode('login'); setError(''); }} style={{ color: '#7ec8e3', cursor: 'pointer', fontWeight: 600 }}>Log in</span>
-                </>
-              )}
-            </div>
           </form>
         </div>
       </div>
