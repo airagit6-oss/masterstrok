@@ -39,6 +39,13 @@ import AppAccessPage from "./pages/AppAccessPage";
 import ResellerLayout from "./pages/ResellerLayout";
 import ResellerDashboardPage from "./pages/ResellerDashboardPage";
 import ResellerUsersPage from "./pages/ResellerUsersPage";
+import ResellerLeadsPage from "./pages/ResellerLeadsPage";
+import ResellerPipelinePage from "./pages/ResellerPipelinePage";
+import ResellerContactsPage from "./pages/ResellerContactsPage";
+import ResellerSubscriptionsPage from "./pages/ResellerSubscriptionsPage";
+import ResellerProductsPage from "./pages/ResellerProductsPage";
+import ResellerEarningsPage from "./pages/ResellerEarningsPage";
+import ResellerSettingsPage from "./pages/ResellerSettingsPage";
 
 // Admin
 import AdminLayout from "./pages/AdminLayout";
@@ -127,7 +134,14 @@ const App = () => (
                 }
               >
                 <Route path="dashboard" element={<ResellerDashboardPage />} />
+                <Route path="leads" element={<ResellerLeadsPage />} />
+                <Route path="pipeline" element={<ResellerPipelinePage />} />
+                <Route path="contacts" element={<ResellerContactsPage />} />
                 <Route path="users" element={<ResellerUsersPage />} />
+                <Route path="subscriptions" element={<ResellerSubscriptionsPage />} />
+                <Route path="products" element={<ResellerProductsPage />} />
+                <Route path="earnings" element={<ResellerEarningsPage />} />
+                <Route path="settings" element={<ResellerSettingsPage />} />
               </Route>
 
               {/* Admin / Boss panel — auth-gated (admin role) */}

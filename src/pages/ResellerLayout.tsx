@@ -1,11 +1,18 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { TrendingUp, Users, LayoutDashboard, LogOut } from 'lucide-react';
+import { TrendingUp, Users, LayoutDashboard, LogOut, UserPlus, Kanban, BookUser, CreditCard, Package, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 const resellerNav = [
-  { to: '/reseller/dashboard', label: 'Earnings', icon: TrendingUp },
-  { to: '/reseller/users', label: 'Referred Users', icon: Users },
+  { to: '/reseller/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/reseller/leads', label: 'Leads', icon: UserPlus },
+  { to: '/reseller/pipeline', label: 'Pipeline', icon: Kanban },
+  { to: '/reseller/contacts', label: 'Contacts', icon: BookUser },
+  { to: '/reseller/users', label: 'Users', icon: Users },
+  { to: '/reseller/subscriptions', label: 'Subscriptions', icon: CreditCard },
+  { to: '/reseller/products', label: 'Products', icon: Package },
+  { to: '/reseller/earnings', label: 'Earnings', icon: TrendingUp },
+  { to: '/reseller/settings', label: 'Settings', icon: Settings },
 ];
 
 const ResellerLayout = () => {
