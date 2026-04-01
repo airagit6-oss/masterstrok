@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AuthGuard from "@/components/AuthGuard";
+import ResellerGuard from "@/components/ResellerGuard";
 import SubscriptionGuard from "@/components/SubscriptionGuard";
 
 // Public pages
@@ -124,15 +125,16 @@ const App = () => (
                 <Route path="recent" element={<RecentPage />} />
               </Route>
 
-              {/* Reseller — auth-gated */}
+              {/* Reseller — reseller/admin role required */}
               <Route
                 path="/reseller"
                 element={
-                  <AuthGuard>
+                  <ResellerGuard>
                     <ResellerLayout />
-                  </AuthGuard>
+                  </ResellerGuard>
                 }
               >
+                <Route index element={<Navigate to="dashboard" replace />} />
                 <Route path="dashboard" element={<ResellerDashboardPage />} />
                 <Route path="leads" element={<ResellerLeadsPage />} />
                 <Route path="pipeline" element={<ResellerPipelinePage />} />
