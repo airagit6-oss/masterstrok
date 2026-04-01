@@ -89,11 +89,12 @@ class RealtimeService {
 
   private scheduleReconnect() {
     if (this.reconnectTimer) return;
+    const delay = this.reconnectDelay;
+    this.reconnectDelay = Math.min(this.reconnectDelay * 2, this.maxReconnectDelay);
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
-      this.reconnectDelay = Math.min(this.reconnectDelay * 2, this.maxReconnectDelay);
       this.connect();
-    }, this.reconnectDelay);
+    }, delay);
   }
 
   on<T>(type: RealtimeEventType, handler: EventHandler<T>) {

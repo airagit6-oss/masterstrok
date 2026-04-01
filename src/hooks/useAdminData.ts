@@ -40,10 +40,10 @@ export function useAdminLogs(limit = 80) {
   // Poll for live updates
   useEffect(() => {
     const iv = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'logs'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'logs', limit] });
     }, LOGS_INTERVAL);
     return () => clearInterval(iv);
-  }, [queryClient]);
+  }, [queryClient, limit]);
 
   return query;
 }
@@ -61,10 +61,10 @@ export function useAdminUsers(count = 30) {
   // Poll for live updates
   useEffect(() => {
     const iv = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users', count] });
     }, USERS_INTERVAL);
     return () => clearInterval(iv);
-  }, [queryClient]);
+  }, [queryClient, count]);
 
   return query;
 }

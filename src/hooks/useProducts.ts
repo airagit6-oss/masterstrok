@@ -30,7 +30,7 @@ export function useSearch(q: string) {
   return useQuery({
     queryKey: ['search', q],
     queryFn: () => fetchSearchResults(q),
-    enabled: true,
+    enabled: q.trim().length > 0,
     staleTime: 1000 * 30,
     retry: false,
   });

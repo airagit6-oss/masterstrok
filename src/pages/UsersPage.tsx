@@ -14,11 +14,14 @@ export default function UsersPage() {
   useEffect(() => {
     if (users.length === 0) return;
     const iv = setInterval(() => {
-      setUsers(prev => prev.map(u => ({
-        ...u,
-        status: Math.random() > 0.2 ? 'live' : 'offline' as const,
-        sessionDuration: u.status === 'live' ? `${Math.floor(Math.random() * 120)}m ${Math.floor(Math.random() * 60)}s` : u.sessionDuration,
-      })));
+      setUsers(prev => {
+        if (prev.length === 0) return prev;
+        return prev.map(u => ({
+          ...u,
+          status: Math.random() > 0.2 ? 'live' : 'offline' as const,
+          sessionDuration: u.status === 'live' ? `${Math.floor(Math.random() * 120)}m ${Math.floor(Math.random() * 60)}s` : u.sessionDuration,
+        }));
+      });
     }, 4000);
     return () => clearInterval(iv);
   }, [users.length]);
