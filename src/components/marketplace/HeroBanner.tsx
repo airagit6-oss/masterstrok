@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Play, Eye, ShoppingBag } from 'lucide-react';
 import { heroSlides } from '@/lib/marketplaceData';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const HeroBanner = () => {
   const [current, setCurrent] = useState(0);
   const { addToCart } = useCart();
+  const { isLoggedIn, hasSubscription } = useAuth();
   const slide = heroSlides[current];
 
   useEffect(() => {
@@ -38,21 +40,24 @@ export const HeroBanner = () => {
             {slide.shortDescription}
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <button className="flex items-center gap-2 rounded-xl mp-gradient-bg px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105">
+            <Link
+              to={isLoggedIn && hasSubscription ? '/dashboard' : '/subscription'}
+              className="flex items-center gap-2 rounded-xl mp-gradient-bg px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
+            >
               <Play className="h-4 w-4" /> Access Now
-            </button>
+            </Link>
             <Link
               to={`/product/${slide.id}`}
               className="flex items-center gap-2 rounded-xl border border-border bg-secondary px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
             >
               <Eye className="h-4 w-4" /> View Details
             </Link>
-            <button
-              onClick={() => addToCart(slide)}
+            <Link
+              to={`/checkout?productId=${slide.id}`}
               className="flex items-center gap-2 rounded-xl border border-primary/30 px-6 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
             >
               <ShoppingBag className="h-4 w-4" /> Buy Now
-            </button>
+            </Link>
           </div>
           {/* Dots */}
           <div className="mt-8 flex gap-2">

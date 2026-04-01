@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Lock, CreditCard, ArrowLeft, Shield, Check, Repeat } from 'lucide-react';
 import { Navbar } from '@/components/marketplace/Navbar';
+import { useAuth } from '@/contexts/AuthContext';
 
 const planData: Record<string, { name: string; monthly: number; yearly: number }> = {
   basic: { name: 'Basic', monthly: 29, yearly: 290 },
@@ -19,6 +20,7 @@ const SubscribeCheckoutPage = () => {
   const total = Math.round((price + tax) * 100) / 100;
 
   const navigate = useNavigate();
+  const { activateSubscription } = useAuth();
   const [processing, setProcessing] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', cardNumber: '', expiry: '', cvc: '' });
 
@@ -30,7 +32,10 @@ const SubscribeCheckoutPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setProcessing(true);
-    setTimeout(() => navigate('/success'), 2000);
+    setTimeout(() => {
+      activateSubscription();
+      navigate('/success');
+    }, 2000);
   };
 
   return (

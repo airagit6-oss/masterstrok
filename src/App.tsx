@@ -4,7 +4,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/CartContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import AuthGuard from "@/components/AuthGuard";
+import SubscriptionGuard from "@/components/SubscriptionGuard";
+
+// Public pages
 import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
@@ -12,31 +18,149 @@ import CheckoutPage from "./pages/CheckoutPage";
 import SubscriptionPage from "./pages/SubscriptionPage";
 import SubscribeCheckoutPage from "./pages/SubscribeCheckoutPage";
 import SuccessPage from "./pages/SuccessPage";
+import SearchPage from "./pages/SearchPage";
+import SupportPage from "./pages/SupportPage";
+import ResellerApplyPage from "./pages/ResellerApplyPage";
 import NotFound from "./pages/NotFound";
+
+// User dashboard
+import DashboardLayout from "./pages/DashboardLayout";
+import DashboardPage from "./pages/DashboardPage";
+import OrdersPage from "./pages/OrdersPage";
+import FavoritesPage from "./pages/FavoritesPage";
+import RecentPage from "./pages/RecentPage";
+import DashboardSubscriptionPage from "./pages/DashboardSubscriptionPage";
+import AppsPage from "./pages/AppsPage";
+
+// App access (subscription-gated)
+import AppAccessPage from "./pages/AppAccessPage";
+
+// Reseller
+import ResellerLayout from "./pages/ResellerLayout";
+import ResellerDashboardPage from "./pages/ResellerDashboardPage";
+import ResellerUsersPage from "./pages/ResellerUsersPage";
+
+// Admin
+import AdminLayout from "./pages/AdminLayout";
+import AdminProductsPage from "./pages/AdminProductsPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminSubscriptionsPage from "./pages/AdminSubscriptionsPage";
+import OverviewPage from "./pages/OverviewPage";
+import UsersPage from "./pages/UsersPage";
+import RevenuePage from "./pages/RevenuePage";
+import LogsPage from "./pages/LogsPage";
+import AlertsPage from "./pages/AlertsPage";
+import InfrastructurePage from "./pages/InfrastructurePage";
+import MetricsPage from "./pages/MetricsPage";
+import TracesPage from "./pages/TracesPage";
+import DashboardsPage from "./pages/DashboardsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <CartProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={<HomePage />} />
-            <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/category/:slug" element={<HomePage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/subscription" element={<SubscriptionPage />} />
-            <Route path="/subscribe-checkout" element={<SubscribeCheckoutPage />} />
-            <Route path="/success" element={<SuccessPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/support" element={<SupportPage />} />
+              <Route path="/reseller-apply" element={<ResellerApplyPage />} />
+
+              {/* Category hierarchy (macro, macro/sub, macro/sub/micro) */}
+              <Route path="/category/:macro" element={<HomePage />} />
+              <Route path="/category/:macro/:sub" element={<HomePage />} />
+              <Route path="/category/:macro/:sub/:micro" element={<HomePage />} />
+
+              {/* Product */}
+              <Route path="/product/:id" element={<ProductPage />} />
+
+              {/* Cart & Checkout */}
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/subscription" element={<SubscriptionPage />} />
+              <Route path="/subscribe-checkout" element={<SubscribeCheckoutPage />} />
+              <Route path="/success" element={<SuccessPage />} />
+
+              {/* App access — subscription-gated */}
+              <Route
+                path="/app/:productId"
+                element={
+                  <SubscriptionGuard>
+                    <AppAccessPage />
+                  </SubscriptionGuard>
+                }
+              />
+
+              {/* User dashboard — auth-gated */}
+              <Route
+                path="/dashboard"
+                element={
+                  <AuthGuard>
+                    <DashboardLayout />
+                  </AuthGuard>
+                }
+              >
+                <Route index element={<DashboardPage />} />
+                <Route path="apps" element={<AppsPage />} />
+                <Route path="orders" element={<OrdersPage />} />
+                <Route path="subscription" element={<DashboardSubscriptionPage />} />
+                <Route path="favorites" element={<FavoritesPage />} />
+                <Route path="recent" element={<RecentPage />} />
+              </Route>
+
+              {/* Reseller — auth-gated */}
+              <Route
+                path="/reseller"
+                element={
+                  <AuthGuard>
+                    <ResellerLayout />
+                  </AuthGuard>
+                }
+              >
+                <Route path="dashboard" element={<ResellerDashboardPage />} />
+                <Route path="users" element={<ResellerUsersPage />} />
+              </Route>
+
+              {/* Admin / Boss panel — auth-gated (admin role) */}
+              <Route
+                path="/admin"
+                element={
+                  <AuthGuard>
+                    <AdminLayout />
+                  </AuthGuard>
+                }
+              >
+                <Route index element={<OverviewPage />} />
+                <Route path="products" element={<AdminProductsPage />} />
+                <Route path="users" element={<UsersPage />} />
+                <Route path="orders" element={<AdminOrdersPage />} />
+                <Route path="subscriptions" element={<AdminSubscriptionsPage />} />
+                <Route path="revenue" element={<RevenuePage />} />
+                <Route path="logs" element={<LogsPage />} />
+                <Route path="alerts" element={<AlertsPage />} />
+                <Route path="apps" element={<AppsPage />} />
+                <Route path="infrastructure" element={<InfrastructurePage />} />
+                <Route path="metrics" element={<MetricsPage />} />
+                <Route path="traces" element={<TracesPage />} />
+                <Route path="dashboards" element={<DashboardsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
+
+              {/* Catch-all → redirect to home (zero 404) */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
