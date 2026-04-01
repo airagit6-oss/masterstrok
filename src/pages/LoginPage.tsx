@@ -3,11 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [focusedField, setFocusedField] = useState<'none' | 'email' | 'password'>('none');
+  const [focusedField, setFocusedField] = useState<'none' | 'email' | 'password' | 'confirm' | 'name'>('none');
   const [eyeState, setEyeState] = useState<'open' | 'closed'>('open');
+  const [error, setError] = useState('');
   const blinkTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const doBlink = useCallback((duration = 150) => {
@@ -17,7 +21,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     const scheduleNext = () => {
-      const isPasswordFocused = focusedField === 'password';
+      const isPasswordFocused = focusedField === 'password' || focusedField === 'confirm';
       const minDelay = isPasswordFocused ? 4000 : 2500;
       const maxDelay = isPasswordFocused ? 6000 : 4000;
       const delay = minDelay + Math.random() * (maxDelay - minDelay);
@@ -36,9 +40,20 @@ const LoginPage = () => {
 
   const handleMascotHover = () => doBlink(140);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/');
+    setError('');
+    if (mode === 'signup') {
+      if (!fullName.trim()) { setError('Name is required'); return; }
+      if (!email.trim()) { setError('Email is required'); return; }
+      if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+      if (password !== confirmPassword) { setError('Passwords do not match'); return; }
+      // Signup success - navigate to home
+      navigate('/');
+    } else {
+      if (!email.trim() || !password.trim()) { setError('Please fill all fields'); return; }
+      navigate('/');
+    }
   };
 
   return (
