@@ -184,7 +184,7 @@ const ResellerContactsPage = () => {
                   <input
                     type={f.type}
                     placeholder={f.placeholder}
-                    value={(form as unknown as Record<string, string>)[f.key] as string
+                    value={(form as unknown as Record<string, string>)[f.key] as string}
                     onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                     className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                   />
