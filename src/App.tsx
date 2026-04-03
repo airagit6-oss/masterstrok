@@ -150,9 +150,9 @@ const App = () => (
               <Route
                 path="/admin"
                 element={
-                  <AuthGuard>
+                  <AdminGuard>
                     <AdminLayout />
-                  </AuthGuard>
+                  </AdminGuard>
                 }
               >
                 <Route index element={<OverviewPage />} />
