@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, X, Headset, LogIn, Users, Menu } from 'lucide-react';
+import { Search, ShoppingCart, User, X, Headset, LogIn, LogOut, Users, Menu, Crown, LayoutDashboard } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -10,7 +10,7 @@ interface NavbarProps {
 
 export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
   const { totalItems, items, showMiniCart, setShowMiniCart, removeFromCart, totalPrice } = useCart();
-  const { isLoggedIn, isAdmin } = useAuth();
+  const { isLoggedIn, isAdmin, isReseller, logout } = useAuth();
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -86,13 +86,51 @@ export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
               <Headset className="h-3.5 w-3.5" />
               Support
             </Link>
-            <Link
-              to="/login"
-              className="hidden lg:flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              <LogIn className="h-3.5 w-3.5" />
-              Login
-            </Link>
+            {isLoggedIn && isAdmin && (
+              <Link
+                to="/admin"
+                className="hidden lg:flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-yellow-400 transition-colors hover:bg-yellow-500/10"
+              >
+                <Crown className="h-3.5 w-3.5" />
+                Boss Panel
+              </Link>
+            )}
+            {isLoggedIn && isReseller && !isAdmin && (
+              <Link
+                to="/reseller/dashboard"
+                className="hidden lg:flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <Users className="h-3.5 w-3.5" />
+                Reseller Panel
+              </Link>
+            )}
+            {isLoggedIn && (
+              <Link
+                to="/dashboard"
+                className="hidden lg:flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Dashboard
+              </Link>
+            )}
+            {!isLoggedIn && (
+              <Link
+                to="/login"
+                className="hidden lg:flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <LogIn className="h-3.5 w-3.5" />
+                Login
+              </Link>
+            )}
+            {isLoggedIn && (
+              <button
+                onClick={() => { logout(); navigate('/'); }}
+                className="hidden lg:flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                Logout
+              </button>
+            )}
             <Link
               to="/cart"
               className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
