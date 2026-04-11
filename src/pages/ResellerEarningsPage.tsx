@@ -1,54 +1,59 @@
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
-import { MetricPanel } from '@/components/dashboard/MetricPanel';
-import { generateTimeSeries } from '@/lib/mockData';
+import { Copy, Check, Download, ArrowUpRight } from 'lucide-react';
 import {
   Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
   Bar, BarChart,
 } from 'recharts';
 
 const tt = {
-  contentStyle: { background: 'hsl(215,28%,9%)', border: '1px solid hsl(215,18%,14%)', borderRadius: 6, fontSize: 12 },
-  labelStyle: { color: 'hsl(210,20%,88%)' },
-  itemStyle: { color: 'hsl(210,20%,75%)' },
+  contentStyle: { background: '#fff', border: '1px solid #e1e3e5', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 14px rgba(0,0,0,0.08)' },
+  labelStyle: { color: '#6d7175' },
+  itemStyle: { color: '#1a1a1a' },
 };
 
 interface EarningEntry {
   id: string;
   source: string;
-  type: 'Commission' | 'Referral Bonus';
+  type: 'App earnings' | 'Referral bonus' | 'Theme earnings';
   amount: number;
   date: string;
-  status: 'Paid' | 'Pending';
+  status: 'Paid' | 'Pending' | 'Processing';
 }
 
 const earningsHistory: EarningEntry[] = [
-  { id: 'e1', source: 'Alex Chen → EduFlow Pro', type: 'Commission', amount: 87, date: '2026-03-28', status: 'Paid' },
-  { id: 'e2', source: 'Sarah Kumar → ShopEngine', type: 'Commission', amount: 45, date: '2026-03-25', status: 'Paid' },
-  { id: 'e3', source: 'Mike Ross → MediCore 360', type: 'Commission', amount: 120, date: '2026-03-20', status: 'Pending' },
-  { id: 'e4', source: 'Priya Patel → HotelNest', type: 'Commission', amount: 68, date: '2026-03-15', status: 'Paid' },
-  { id: 'e5', source: 'New Referral Signup × 3', type: 'Referral Bonus', amount: 30, date: '2026-03-10', status: 'Paid' },
-  { id: 'e6', source: 'James Wilson → AnalyticsHub', type: 'Commission', amount: 95, date: '2026-03-08', status: 'Paid' },
-  { id: 'e7', source: 'Emily Davis → EduFlow Pro', type: 'Commission', amount: 87, date: '2026-03-05', status: 'Paid' },
+  { id: 'e1', source: 'Alex Chen → EduFlow Pro', type: 'App earnings', amount: 87, date: '2026-03-28', status: 'Paid' },
+  { id: 'e2', source: 'Sarah Kumar → ShopEngine', type: 'App earnings', amount: 45, date: '2026-03-25', status: 'Paid' },
+  { id: 'e3', source: 'Mike Ross → MediCore 360', type: 'App earnings', amount: 120, date: '2026-03-20', status: 'Processing' },
+  { id: 'e4', source: 'Priya Patel → HotelNest', type: 'App earnings', amount: 68, date: '2026-03-15', status: 'Paid' },
+  { id: 'e5', source: 'New Referral Signup × 3', type: 'Referral bonus', amount: 30, date: '2026-03-10', status: 'Paid' },
+  { id: 'e6', source: 'James Wilson → AnalyticsHub', type: 'App earnings', amount: 95, date: '2026-03-08', status: 'Paid' },
+  { id: 'e7', source: 'Emily Davis → EduFlow Pro', type: 'App earnings', amount: 87, date: '2026-03-05', status: 'Pending' },
 ];
 
-const revenueData = generateTimeSeries(30, 200, 800);
-const commissionByProduct = [
-  { name: 'EduFlow', value: 174 },
-  { name: 'MediCore', value: 120 },
-  { name: 'ShopEngine', value: 45 },
-  { name: 'HotelNest', value: 68 },
-  { name: 'Analytics', value: 95 },
+const revenueData = Array.from({ length: 12 }, (_, i) => ({
+  month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+  value: Math.floor(400 + Math.random() * 800),
+}));
+
+const byType = [
+  { name: 'App earnings', value: 502 },
+  { name: 'Referral bonus', value: 30 },
+  { name: 'Theme earnings', value: 0 },
 ];
+
+const statusStyles: Record<string, { bg: string; text: string }> = {
+  Paid: { bg: '#e4f3e8', text: '#008060' },
+  Pending: { bg: '#fef3e0', text: '#b98900' },
+  Processing: { bg: '#e0f0ff', text: '#0070f3' },
+};
 
 const ResellerEarningsPage = () => {
   const [copied, setCopied] = useState(false);
   const referralLink = 'https://saashub.io/ref/MYCODE123';
 
   const totalEarned = earningsHistory.reduce((s, e) => s + e.amount, 0);
-  const pending = earningsHistory.filter(e => e.status === 'Pending').reduce((s, e) => s + e.amount, 0);
+  const pending = earningsHistory.filter(e => e.status !== 'Paid').reduce((s, e) => s + e.amount, 0);
   const paid = totalEarned - pending;
-  const referralCount = earningsHistory.filter(e => e.type === 'Referral Bonus').length;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink).catch(() => {});
@@ -57,109 +62,122 @@ const ResellerEarningsPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Earnings</h1>
-        <p className="text-sm text-muted-foreground mt-1">Track your commissions, referrals, and revenue</p>
+    <div className="space-y-5 max-w-[1200px]">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold" style={{ color: '#1a1a1a' }}>Payouts</h2>
+          <p className="text-sm mt-0.5" style={{ color: '#6d7175' }}>Track your earnings, commissions, and payment history</p>
+        </div>
+        <button className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors" style={{ borderColor: '#c9cccf', color: '#1a1a1a' }}>
+          <Download className="h-4 w-4" />
+          Export
+        </button>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Total Earned', value: `$${totalEarned}`, color: 'text-foreground' },
-          { label: 'Paid Out', value: `$${paid}`, color: 'text-green-400' },
-          { label: 'Pending', value: `$${pending}`, color: 'text-yellow-400' },
-          { label: 'Referral Sales', value: referralCount.toString(), color: 'text-primary' },
+          { label: 'Total Earned', value: `$${totalEarned}`, sub: 'All time', color: '#1a1a1a' },
+          { label: 'Paid Out', value: `$${paid}`, sub: 'Completed payouts', color: '#008060' },
+          { label: 'Pending', value: `$${pending}`, sub: 'Processing & pending', color: '#b98900' },
         ].map(k => (
-          <div key={k.label} className="rounded-xl border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">{k.label}</p>
-            <p className={`text-2xl font-bold mt-1 ${k.color}`}>{k.value}</p>
+          <div key={k.label} className="bg-white rounded-xl border p-5" style={{ borderColor: '#e1e3e5' }}>
+            <p className="text-xs font-medium" style={{ color: '#6d7175' }}>{k.label}</p>
+            <p className="text-2xl font-bold mt-1" style={{ color: k.color }}>{k.value}</p>
+            <p className="text-[11px] mt-0.5" style={{ color: '#8c9196' }}>{k.sub}</p>
           </div>
         ))}
       </div>
 
       {/* Referral Link */}
-      <div className="rounded-xl border border-border bg-card p-4">
-        <p className="text-sm font-semibold text-foreground mb-2">Your Referral Link</p>
+      <div className="bg-white rounded-xl border p-5" style={{ borderColor: '#e1e3e5' }}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <p className="text-sm font-semibold" style={{ color: '#1a1a1a' }}>Your Referral Link</p>
+            <p className="text-xs" style={{ color: '#6d7175' }}>Earn 30% commission on every sale</p>
+          </div>
+          <span className="rounded-full px-3 py-1 text-xs font-semibold" style={{ background: '#e4f3e8', color: '#008060' }}>30% commission</span>
+        </div>
         <div className="flex items-center gap-2">
-          <code className="flex-1 rounded-lg bg-secondary px-3 py-2 text-sm text-muted-foreground font-mono truncate">
+          <code className="flex-1 rounded-lg px-3 py-2.5 text-sm font-mono truncate" style={{ background: '#f6f6f7', color: '#6d7175' }}>
             {referralLink}
           </code>
           <button
             onClick={copyLink}
-            className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent transition-colors"
+            className="flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium text-white transition-colors"
+            style={{ background: '#008060' }}
           >
-            {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
+            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             {copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">Earn 30% commission on every sale made through your link</p>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-2 gap-4">
-        <MetricPanel title="Revenue Over Time ($)">
+        <div className="bg-white rounded-xl border p-5" style={{ borderColor: '#e1e3e5' }}>
+          <h3 className="text-sm font-semibold mb-4" style={{ color: '#1a1a1a' }}>Earnings Over Time</h3>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={revenueData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(215,18%,14%)" />
-              <XAxis dataKey="time" tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#6d7175' }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: '#6d7175' }} tickLine={false} axisLine={false} tickFormatter={v => `$${v}`} />
               <Tooltip {...tt} />
               <defs>
-                <linearGradient id="earnGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(142,71%,45%)" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="hsl(142,71%,45%)" stopOpacity={0} />
+                <linearGradient id="payoutGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#008060" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#008060" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <Area type="monotone" dataKey="value" stroke="hsl(142,71%,45%)" strokeWidth={2} fill="url(#earnGrad)" dot={false} />
+              <Area type="monotone" dataKey="value" stroke="#008060" strokeWidth={2} fill="url(#payoutGrad)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
-        </MetricPanel>
+        </div>
 
-        <MetricPanel title="Commission by Product ($)">
+        <div className="bg-white rounded-xl border p-5" style={{ borderColor: '#e1e3e5' }}>
+          <h3 className="text-sm font-semibold mb-4" style={{ color: '#1a1a1a' }}>Earnings by Type</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={commissionByProduct}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(215,18%,14%)" />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
+            <BarChart data={byType}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#6d7175' }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: '#6d7175' }} tickLine={false} axisLine={false} tickFormatter={v => `$${v}`} />
               <Tooltip {...tt} />
-              <Bar dataKey="value" fill="hsl(270,70%,60%)" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="value" fill="#008060" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </MetricPanel>
+        </div>
       </div>
 
-      {/* Earnings History */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="px-4 py-3 border-b border-border">
-          <h2 className="font-semibold text-foreground">Earnings History</h2>
+      {/* Transaction History */}
+      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: '#e1e3e5' }}>
+        <div className="px-5 py-4 border-b" style={{ borderColor: '#e1e3e5' }}>
+          <h3 className="text-sm font-semibold" style={{ color: '#1a1a1a' }}>Transaction History</h3>
         </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-secondary/50">
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Source</th>
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Type</th>
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Amount</th>
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Date</th>
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Status</th>
+            <tr style={{ background: '#fafbfb', borderBottom: '1px solid #e1e3e5' }}>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>Source</th>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>Type</th>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>Amount</th>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>Date</th>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>Status</th>
             </tr>
           </thead>
           <tbody>
-            {earningsHistory.map(e => (
-              <tr key={e.id} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
-                <td className="px-4 py-2.5 text-foreground">{e.source}</td>
-                <td className="px-4 py-2.5 text-muted-foreground">{e.type}</td>
-                <td className="px-4 py-2.5 font-semibold text-foreground">${e.amount}</td>
-                <td className="px-4 py-2.5 text-muted-foreground">{e.date}</td>
-                <td className="px-4 py-2.5">
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                    e.status === 'Paid' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                    {e.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
+            {earningsHistory.map(e => {
+              const st = statusStyles[e.status];
+              return (
+                <tr key={e.id} className="border-b last:border-0 hover:bg-gray-50/50 transition-colors" style={{ borderColor: '#f1f1f1' }}>
+                  <td className="px-5 py-3 text-[13px] font-medium" style={{ color: '#1a1a1a' }}>{e.source}</td>
+                  <td className="px-5 py-3 text-[13px]" style={{ color: '#6d7175' }}>{e.type}</td>
+                  <td className="px-5 py-3 text-[13px] font-semibold" style={{ color: '#1a1a1a' }}>${e.amount}</td>
+                  <td className="px-5 py-3 text-[13px]" style={{ color: '#6d7175' }}>{e.date}</td>
+                  <td className="px-5 py-3">
+                    <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: st.bg, color: st.text }}>{e.status}</span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
