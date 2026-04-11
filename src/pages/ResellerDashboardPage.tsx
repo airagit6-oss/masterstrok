@@ -1,149 +1,189 @@
 import { useState } from 'react';
-import { TrendingUp, DollarSign, Users, ShoppingBag, Activity } from 'lucide-react';
-import { MetricPanel } from '@/components/dashboard/MetricPanel';
-import { generateTimeSeries } from '@/lib/mockData';
+import { TrendingUp, DollarSign, Users, Package, ArrowUpRight, ArrowDownRight, Store, CreditCard, Eye } from 'lucide-react';
 import {
   Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
-  Line, LineChart,
+  Bar, BarChart,
 } from 'recharts';
 
 const tt = {
-  contentStyle: { background: 'hsl(215,28%,9%)', border: '1px solid hsl(215,18%,14%)', borderRadius: 6, fontSize: 12 },
-  labelStyle: { color: 'hsl(210,20%,88%)' },
-  itemStyle: { color: 'hsl(210,20%,75%)' },
+  contentStyle: { background: '#fff', border: '1px solid #e1e3e5', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 14px rgba(0,0,0,0.08)' },
+  labelStyle: { color: '#6d7175' },
+  itemStyle: { color: '#1a1a1a' },
 };
 
-const kpis = [
-  { label: 'Total Leads', value: '64', icon: Users, change: '+7 this week', color: 'text-blue-400' },
-  { label: 'Active Users', value: '47', icon: Users, change: '+5 this month', color: 'text-green-400' },
-  { label: 'Conversion Rate', value: '28%', icon: Activity, change: '+3% vs last month', color: 'text-purple-400' },
-  { label: 'Revenue', value: '$1,240', icon: DollarSign, change: '+12% this month', color: 'text-yellow-400' },
-  { label: 'Active Subs', value: '4', icon: ShoppingBag, change: '2 expiring soon', color: 'text-primary' },
+const earningsData = Array.from({ length: 12 }, (_, i) => ({
+  month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+  earnings: Math.floor(800 + Math.random() * 2200),
+  referrals: Math.floor(3 + Math.random() * 12),
+}));
+
+const appPerformance = [
+  { name: 'EduFlow Pro', installs: 45, revenue: 1240, rating: 4.8 },
+  { name: 'ShopEngine', installs: 38, revenue: 980, rating: 4.6 },
+  { name: 'MediCore 360', installs: 22, revenue: 760, rating: 4.9 },
+  { name: 'HotelNest', installs: 15, revenue: 420, rating: 4.3 },
+  { name: 'AnalyticsHub', installs: 31, revenue: 890, rating: 4.7 },
 ];
 
-const recentCommissions = [
-  { user: 'john_doe', product: 'EduFlow Pro', amount: 87, date: '2026-03-28', status: 'Paid' },
-  { user: 'sarah_k', product: 'MediCore 360', amount: 45, date: '2026-03-25', status: 'Paid' },
-  { user: 'mike_r', product: 'ShopEngine', amount: 120, date: '2026-03-20', status: 'Pending' },
-  { user: 'priya_p', product: 'HotelNest', amount: 68, date: '2026-03-15', status: 'Paid' },
+const recentActivity = [
+  { action: 'New referral signup', detail: 'Rahul Sharma signed up via your link', time: '2 hours ago', type: 'success' },
+  { action: 'Commission earned', detail: '$87.00 from EduFlow Pro subscription', time: '5 hours ago', type: 'earning' },
+  { action: 'App review received', detail: 'ShopEngine rated 5 stars by user', time: '1 day ago', type: 'info' },
+  { action: 'Payout processed', detail: '$532.00 sent to your bank account', time: '3 days ago', type: 'payout' },
+  { action: 'New client onboarded', detail: 'Carlos Torres activated MediCore 360', time: '4 days ago', type: 'success' },
 ];
-
-const leadsData = generateTimeSeries(30, 2, 12);
-const revenueData = generateTimeSeries(30, 150, 600);
-const conversionData = generateTimeSeries(30, 15, 45);
 
 const ResellerDashboardPage = () => {
-  const [_leads] = useState(leadsData);
-  const [_revenue] = useState(revenueData);
-  const [_conversion] = useState(conversionData);
+  const [period] = useState('This month');
+
+  const kpis = [
+    { label: 'Total Earnings', value: '$12,480', change: '+18.2%', up: true, icon: DollarSign, iconBg: '#e4f3e8', iconColor: '#008060' },
+    { label: 'Active Referrals', value: '64', change: '+7', up: true, icon: Users, iconBg: '#e0f0ff', iconColor: '#0070f3' },
+    { label: 'Managed Stores', value: '12', change: '+2', up: true, icon: Store, iconBg: '#fef3e0', iconColor: '#b98900' },
+    { label: 'App Installs', value: '151', change: '-3.1%', up: false, icon: Package, iconBg: '#fce4ec', iconColor: '#d32f2f' },
+  ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-[1200px]">
+      {/* Welcome */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Reseller Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">Your leads, users, and revenue at a glance</p>
+        <h2 className="text-xl font-semibold" style={{ color: '#1a1a1a' }}>Good morning, Partner 👋</h2>
+        <p className="text-sm mt-0.5" style={{ color: '#6d7175' }}>Here's what's happening with your partner account today.</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map(k => (
-          <div key={k.label} className="rounded-xl border border-border bg-card p-4">
+          <div key={k.label} className="bg-white rounded-xl border p-5 hover:shadow-md transition-shadow" style={{ borderColor: '#e1e3e5' }}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">{k.label}</p>
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                <k.icon className="h-3.5 w-3.5 text-primary" />
+              <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ background: k.iconBg }}>
+                <k.icon className="h-5 w-5" style={{ color: k.iconColor }} />
+              </div>
+              <div className={`flex items-center gap-0.5 text-xs font-medium ${k.up ? 'text-green-600' : 'text-red-500'}`}>
+                {k.up ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
+                {k.change}
               </div>
             </div>
-            <p className={`text-2xl font-bold ${k.color}`}>{k.value}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{k.change}</p>
+            <p className="text-2xl font-bold" style={{ color: '#1a1a1a' }}>{k.value}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#6d7175' }}>{k.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-3 gap-4">
-        <MetricPanel title="Leads Over Time">
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={_leads}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(215,18%,14%)" />
-              <XAxis dataKey="time" tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Earnings Chart */}
+        <div className="lg:col-span-2 bg-white rounded-xl border p-5" style={{ borderColor: '#e1e3e5' }}>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-semibold" style={{ color: '#1a1a1a' }}>Earnings Overview</h3>
+              <p className="text-xs" style={{ color: '#6d7175' }}>{period}</p>
+            </div>
+            <div className="flex gap-1">
+              {['7d', '30d', '90d', '12m'].map(p => (
+                <button key={p} className="px-2.5 py-1 rounded-md text-xs font-medium transition-colors" style={{
+                  background: p === '12m' ? '#008060' : 'transparent',
+                  color: p === '12m' ? 'white' : '#6d7175',
+                }}>
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={earningsData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f1" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#6d7175' }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: '#6d7175' }} tickLine={false} axisLine={false} tickFormatter={v => `$${v}`} />
               <Tooltip {...tt} />
               <defs>
-                <linearGradient id="leadsGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(210,100%,56%)" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="hsl(210,100%,56%)" stopOpacity={0} />
+                <linearGradient id="earnGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#008060" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#008060" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <Area type="monotone" dataKey="value" stroke="hsl(210,100%,56%)" strokeWidth={2} fill="url(#leadsGrad)" dot={false} />
+              <Area type="monotone" dataKey="earnings" stroke="#008060" strokeWidth={2} fill="url(#earnGrad)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
-        </MetricPanel>
+        </div>
 
-        <MetricPanel title="Revenue ($)">
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={_revenue}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(215,18%,14%)" />
-              <XAxis dataKey="time" tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
-              <Tooltip {...tt} />
-              <defs>
-                <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(142,71%,45%)" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="hsl(142,71%,45%)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <Area type="monotone" dataKey="value" stroke="hsl(142,71%,45%)" strokeWidth={2} fill="url(#revenueGrad)" dot={false} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </MetricPanel>
-
-        <MetricPanel title="Conversion Rate (%)">
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={_conversion}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(215,18%,14%)" />
-              <XAxis dataKey="time" tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'hsl(215,15%,50%)' }} tickLine={false} axisLine={false} />
-              <Tooltip {...tt} />
-              <Line type="monotone" dataKey="value" stroke="hsl(270,70%,60%)" strokeWidth={2} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </MetricPanel>
+        {/* Recent Activity */}
+        <div className="bg-white rounded-xl border p-5" style={{ borderColor: '#e1e3e5' }}>
+          <h3 className="text-sm font-semibold mb-4" style={{ color: '#1a1a1a' }}>Recent Activity</h3>
+          <div className="space-y-3">
+            {recentActivity.map((a, i) => (
+              <div key={i} className="flex gap-3">
+                <div className="mt-0.5">
+                  <div className="h-2 w-2 rounded-full" style={{
+                    background: a.type === 'success' ? '#008060' : a.type === 'earning' ? '#b98900' : a.type === 'payout' ? '#0070f3' : '#6d7175'
+                  }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium leading-tight" style={{ color: '#1a1a1a' }}>{a.action}</p>
+                  <p className="text-[11px] leading-tight mt-0.5" style={{ color: '#6d7175' }}>{a.detail}</p>
+                  <p className="text-[10px] mt-1" style={{ color: '#8c9196' }}>{a.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Recent Commissions */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="px-4 py-3 border-b border-border">
-          <h2 className="font-semibold text-foreground">Recent Commissions</h2>
+      {/* App Performance Table */}
+      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: '#e1e3e5' }}>
+        <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: '#e1e3e5' }}>
+          <h3 className="text-sm font-semibold" style={{ color: '#1a1a1a' }}>App Performance</h3>
+          <button className="text-xs font-medium" style={{ color: '#008060' }}>View all →</button>
         </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-secondary/50">
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">User</th>
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Product</th>
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Commission</th>
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Date</th>
-              <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Status</th>
+            <tr style={{ background: '#fafbfb', borderBottom: '1px solid #e1e3e5' }}>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>App</th>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>Installs</th>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>Revenue</th>
+              <th className="px-5 py-2.5 text-left text-xs font-medium" style={{ color: '#6d7175' }}>Rating</th>
             </tr>
           </thead>
           <tbody>
-            {recentCommissions.map((c, i) => (
-              <tr key={i} className="border-b border-border last:border-0 hover:bg-accent/30 transition-colors">
-                <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{c.user}</td>
-                <td className="px-4 py-2.5 text-foreground">{c.product}</td>
-                <td className="px-4 py-2.5 font-medium text-foreground">${c.amount}</td>
-                <td className="px-4 py-2.5 text-muted-foreground">{c.date}</td>
-                <td className="px-4 py-2.5">
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                    c.status === 'Paid' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                    {c.status}
+            {appPerformance.map((app, i) => (
+              <tr key={i} className="border-b last:border-0 hover:bg-gray-50/50 transition-colors" style={{ borderColor: '#f1f1f1' }}>
+                <td className="px-5 py-3">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold text-white" style={{ background: '#008060' }}>
+                      {app.name[0]}
+                    </div>
+                    <span className="font-medium text-[13px]" style={{ color: '#1a1a1a' }}>{app.name}</span>
+                  </div>
+                </td>
+                <td className="px-5 py-3 text-[13px]" style={{ color: '#1a1a1a' }}>{app.installs}</td>
+                <td className="px-5 py-3 text-[13px] font-medium" style={{ color: '#1a1a1a' }}>${app.revenue.toLocaleString()}</td>
+                <td className="px-5 py-3">
+                  <span className="inline-flex items-center gap-1 text-[13px]">
+                    <span style={{ color: '#b98900' }}>★</span>
+                    <span style={{ color: '#1a1a1a' }}>{app.rating}</span>
                   </span>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { title: 'Add a new app', desc: 'Submit your app to the marketplace', icon: Package, color: '#008060' },
+          { title: 'Invite a client', desc: 'Send referral link to a new merchant', icon: Users, color: '#0070f3' },
+          { title: 'View payouts', desc: 'Check your earnings and payment history', icon: CreditCard, color: '#b98900' },
+        ].map((action, i) => (
+          <button key={i} className="bg-white rounded-xl border p-5 text-left hover:shadow-md transition-all group" style={{ borderColor: '#e1e3e5' }}>
+            <div className="h-10 w-10 rounded-xl flex items-center justify-center mb-3" style={{ background: `${action.color}15` }}>
+              <action.icon className="h-5 w-5" style={{ color: action.color }} />
+            </div>
+            <p className="text-[13px] font-semibold group-hover:underline" style={{ color: '#1a1a1a' }}>{action.title}</p>
+            <p className="text-[12px] mt-0.5" style={{ color: '#6d7175' }}>{action.desc}</p>
+          </button>
+        ))}
       </div>
     </div>
   );
