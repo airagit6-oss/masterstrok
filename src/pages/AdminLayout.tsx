@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { BarChart2, Users, ShoppingBag, CreditCard, FileText, AlertCircle, Activity, Settings, LogOut, LayoutDashboard, Server, GitBranch, LayoutGrid } from 'lucide-react';
+import { BarChart2, Users, ShoppingBag, CreditCard, FileText, AlertCircle, Activity, Settings, LogOut, LayoutDashboard, Server, GitBranch, LayoutGrid, Image } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const adminNav = [
@@ -17,6 +17,7 @@ const adminNav = [
   { to: '/admin/metrics', label: 'Metrics', icon: LayoutDashboard, end: false },
   { to: '/admin/traces', label: 'Traces', icon: GitBranch, end: false },
   { to: '/admin/dashboards', label: 'Dashboards', icon: LayoutGrid, end: false },
+  { to: '/admin/gallery', label: 'Gallery', icon: Image, end: false },
   { to: '/admin/settings', label: 'Settings', icon: Settings, end: false },
 ];
 
