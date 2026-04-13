@@ -51,6 +51,7 @@ import ResellerSettingsPage from "./pages/ResellerSettingsPage";
 
 // Admin
 import AdminLayout from "./pages/AdminLayout";
+import AdminGalleryPage from "./pages/AdminGalleryPage";
 import AdminProductsPage from "./pages/AdminProductsPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
 import AdminSubscriptionsPage from "./pages/AdminSubscriptionsPage";
@@ -170,6 +171,7 @@ const App = () => (
                 <Route path="traces" element={<TracesPage />} />
                 <Route path="dashboards" element={<DashboardsPage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="gallery" element={<AdminGalleryPage />} />
               </Route>
 
               {/* Catch-all → redirect to home (zero 404) */}
