@@ -34,6 +34,12 @@ import RecentPage from "./pages/RecentPage";
 import DashboardSubscriptionPage from "./pages/DashboardSubscriptionPage";
 import AppsPage from "./pages/AppsPage";
 
+// User dashboard sub-pages
+import ProfilePage from "./pages/dashboard/ProfilePage";
+import BillingPage from "./pages/dashboard/BillingPage";
+import NotificationsPage from "./pages/dashboard/NotificationsPage";
+import SecurityPage from "./pages/dashboard/SecurityPage";
+
 // App access (subscription-gated)
 import AppAccessPage from "./pages/AppAccessPage";
 
@@ -48,6 +54,10 @@ import ResellerSubscriptionsPage from "./pages/ResellerSubscriptionsPage";
 import ResellerProductsPage from "./pages/ResellerProductsPage";
 import ResellerEarningsPage from "./pages/ResellerEarningsPage";
 import ResellerSettingsPage from "./pages/ResellerSettingsPage";
+import ResellerCommissionsPage from "./pages/reseller/ResellerCommissionsPage";
+import ResellerReportsPage from "./pages/reseller/ResellerReportsPage";
+import ResellerMarketingPage from "./pages/reseller/ResellerMarketingPage";
+import ResellerPayoutsHistoryPage from "./pages/reseller/ResellerPayoutsHistoryPage";
 
 // Admin
 import AdminLayout from "./pages/AdminLayout";
@@ -65,6 +75,12 @@ import MetricsPage from "./pages/MetricsPage";
 import TracesPage from "./pages/TracesPage";
 import DashboardsPage from "./pages/DashboardsPage";
 import SettingsPage from "./pages/SettingsPage";
+import VendorsPage from "./pages/admin/VendorsPage";
+import CategoriesPage from "./pages/admin/CategoriesPage";
+import ReviewsPage from "./pages/admin/ReviewsPage";
+import CouponsPage from "./pages/admin/CouponsPage";
+import ReportsPage from "./pages/admin/ReportsPage";
+import EmailTemplatesPage from "./pages/admin/EmailTemplatesPage";
 
 const queryClient = new QueryClient();
 
@@ -125,6 +141,10 @@ const App = () => (
                 <Route path="subscription" element={<DashboardSubscriptionPage />} />
                 <Route path="favorites" element={<FavoritesPage />} />
                 <Route path="recent" element={<RecentPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="billing" element={<BillingPage />} />
+                <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="security" element={<SecurityPage />} />
               </Route>
 
               {/* Reseller — reseller/admin role required */}
@@ -145,6 +165,10 @@ const App = () => (
                 <Route path="subscriptions" element={<ResellerSubscriptionsPage />} />
                 <Route path="products" element={<ResellerProductsPage />} />
                 <Route path="earnings" element={<ResellerEarningsPage />} />
+                <Route path="commissions" element={<ResellerCommissionsPage />} />
+                <Route path="payouts-history" element={<ResellerPayoutsHistoryPage />} />
+                <Route path="marketing" element={<ResellerMarketingPage />} />
+                <Route path="reports" element={<ResellerReportsPage />} />
                 <Route path="settings" element={<ResellerSettingsPage />} />
               </Route>
 
@@ -159,7 +183,12 @@ const App = () => (
               >
                 <Route index element={<OverviewPage />} />
                 <Route path="products" element={<AdminProductsPage />} />
+                <Route path="categories" element={<CategoriesPage />} />
+                <Route path="gallery" element={<AdminGalleryPage />} />
+                <Route path="reviews" element={<ReviewsPage />} />
+                <Route path="coupons" element={<CouponsPage />} />
                 <Route path="users" element={<UsersPage />} />
+                <Route path="vendors" element={<VendorsPage />} />
                 <Route path="orders" element={<AdminOrdersPage />} />
                 <Route path="subscriptions" element={<AdminSubscriptionsPage />} />
                 <Route path="revenue" element={<RevenuePage />} />
@@ -170,8 +199,9 @@ const App = () => (
                 <Route path="metrics" element={<MetricsPage />} />
                 <Route path="traces" element={<TracesPage />} />
                 <Route path="dashboards" element={<DashboardsPage />} />
+                <Route path="reports" element={<ReportsPage />} />
+                <Route path="email-templates" element={<EmailTemplatesPage />} />
                 <Route path="settings" element={<SettingsPage />} />
-                <Route path="gallery" element={<AdminGalleryPage />} />
               </Route>
 
               {/* Catch-all → redirect to home (zero 404) */}
