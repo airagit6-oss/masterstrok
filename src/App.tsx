@@ -34,6 +34,12 @@ import RecentPage from "./pages/RecentPage";
 import DashboardSubscriptionPage from "./pages/DashboardSubscriptionPage";
 import AppsPage from "./pages/AppsPage";
 
+// User dashboard sub-pages
+import ProfilePage from "./pages/dashboard/ProfilePage";
+import BillingPage from "./pages/dashboard/BillingPage";
+import NotificationsPage from "./pages/dashboard/NotificationsPage";
+import SecurityPage from "./pages/dashboard/SecurityPage";
+
 // App access (subscription-gated)
 import AppAccessPage from "./pages/AppAccessPage";
 
@@ -48,6 +54,10 @@ import ResellerSubscriptionsPage from "./pages/ResellerSubscriptionsPage";
 import ResellerProductsPage from "./pages/ResellerProductsPage";
 import ResellerEarningsPage from "./pages/ResellerEarningsPage";
 import ResellerSettingsPage from "./pages/ResellerSettingsPage";
+import ResellerCommissionsPage from "./pages/reseller/ResellerCommissionsPage";
+import ResellerReportsPage from "./pages/reseller/ResellerReportsPage";
+import ResellerMarketingPage from "./pages/reseller/ResellerMarketingPage";
+import ResellerPayoutsHistoryPage from "./pages/reseller/ResellerPayoutsHistoryPage";
 
 // Admin
 import AdminLayout from "./pages/AdminLayout";
@@ -65,6 +75,12 @@ import MetricsPage from "./pages/MetricsPage";
 import TracesPage from "./pages/TracesPage";
 import DashboardsPage from "./pages/DashboardsPage";
 import SettingsPage from "./pages/SettingsPage";
+import VendorsPage from "./pages/admin/VendorsPage";
+import CategoriesPage from "./pages/admin/CategoriesPage";
+import ReviewsPage from "./pages/admin/ReviewsPage";
+import CouponsPage from "./pages/admin/CouponsPage";
+import ReportsPage from "./pages/admin/ReportsPage";
+import EmailTemplatesPage from "./pages/admin/EmailTemplatesPage";
 
 const queryClient = new QueryClient();
 
