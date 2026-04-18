@@ -38,7 +38,7 @@ const AppAccessPage = () => {
             Live
           </span>
           <a
-            href="#"
+            href={`/product/${product.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
