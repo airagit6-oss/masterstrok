@@ -141,6 +141,10 @@ const App = () => (
                 <Route path="subscription" element={<DashboardSubscriptionPage />} />
                 <Route path="favorites" element={<FavoritesPage />} />
                 <Route path="recent" element={<RecentPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="billing" element={<BillingPage />} />
+                <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="security" element={<SecurityPage />} />
               </Route>
 
               {/* Reseller — reseller/admin role required */}
@@ -161,6 +165,10 @@ const App = () => (
                 <Route path="subscriptions" element={<ResellerSubscriptionsPage />} />
                 <Route path="products" element={<ResellerProductsPage />} />
                 <Route path="earnings" element={<ResellerEarningsPage />} />
+                <Route path="commissions" element={<ResellerCommissionsPage />} />
+                <Route path="payouts-history" element={<ResellerPayoutsHistoryPage />} />
+                <Route path="marketing" element={<ResellerMarketingPage />} />
+                <Route path="reports" element={<ResellerReportsPage />} />
                 <Route path="settings" element={<ResellerSettingsPage />} />
               </Route>
 
@@ -175,7 +183,12 @@ const App = () => (
               >
                 <Route index element={<OverviewPage />} />
                 <Route path="products" element={<AdminProductsPage />} />
+                <Route path="categories" element={<CategoriesPage />} />
+                <Route path="gallery" element={<AdminGalleryPage />} />
+                <Route path="reviews" element={<ReviewsPage />} />
+                <Route path="coupons" element={<CouponsPage />} />
                 <Route path="users" element={<UsersPage />} />
+                <Route path="vendors" element={<VendorsPage />} />
                 <Route path="orders" element={<AdminOrdersPage />} />
                 <Route path="subscriptions" element={<AdminSubscriptionsPage />} />
                 <Route path="revenue" element={<RevenuePage />} />
@@ -186,8 +199,9 @@ const App = () => (
                 <Route path="metrics" element={<MetricsPage />} />
                 <Route path="traces" element={<TracesPage />} />
                 <Route path="dashboards" element={<DashboardsPage />} />
+                <Route path="reports" element={<ReportsPage />} />
+                <Route path="email-templates" element={<EmailTemplatesPage />} />
                 <Route path="settings" element={<SettingsPage />} />
-                <Route path="gallery" element={<AdminGalleryPage />} />
               </Route>
 
               {/* Catch-all → redirect to home (zero 404) */}
