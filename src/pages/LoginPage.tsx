@@ -208,6 +208,36 @@ const LoginPage = () => {
             </p>
           )}
         </div>
+
+        {/* Quick auto-login (dev/test) */}
+        <div style={{ marginTop: '24px', padding: '16px', background: '#111', border: '1px dashed #333', borderRadius: '10px' }}>
+          <div style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            Quick Test Login
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+            <button
+              type="button"
+              onClick={() => { login('user@test.com', 'test', 'user'); navigate('/'); }}
+              style={{ padding: '10px 8px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: '#7ec8e3', color: '#fff', fontSize: '12px', fontWeight: 600 }}
+            >
+              👤 User
+            </button>
+            <button
+              type="button"
+              onClick={() => { login('reseller@test.com', 'test', 'reseller'); navigate('/reseller/dashboard'); }}
+              style={{ padding: '10px 8px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg, #7c3aed, #5b21b6)', color: '#fff', fontSize: '12px', fontWeight: 600 }}
+            >
+              🤝 Reseller
+            </button>
+            <button
+              type="button"
+              onClick={() => { login('boss@test.com', 'test', 'admin'); navigate('/admin'); }}
+              style={{ padding: '10px 8px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg, #d4a017, #b8860b)', color: '#fff', fontSize: '12px', fontWeight: 600 }}
+            >
+              👑 Boss
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
