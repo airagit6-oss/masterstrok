@@ -1,13 +1,17 @@
 import { Link } from 'react-router-dom';
 import { ShoppingBag, CreditCard, Package } from 'lucide-react';
 import { products } from '@/lib/marketplaceData';
+import { toast } from 'sonner';
 
 const AdminProductsPage = () => {
+  const handleAdd = () => {
+    toast.info('Product creation will be available once the catalog backend is connected.');
+  };
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Products</h1>
-        <button className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+        <button onClick={handleAdd} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
           + Add Product
         </button>
       </div>
