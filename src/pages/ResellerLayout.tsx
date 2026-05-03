@@ -164,6 +164,7 @@ const ResellerSidebar = () => {
 
 const ResellerLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const currentPage = allItems.find(n => location.pathname.startsWith(n.to));
   const pageTitle = currentPage?.label ?? 'Partner Dashboard';
