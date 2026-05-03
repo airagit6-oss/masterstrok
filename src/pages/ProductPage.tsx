@@ -7,6 +7,7 @@ import {
 import { Navbar } from '@/components/marketplace/Navbar';
 import { useCart } from '@/contexts/CartContext';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { useProduct, useProductReviews, useRelatedProducts } from '@/hooks/useProduct';
 
 const ProductPage = () => {
@@ -17,6 +18,30 @@ const ProductPage = () => {
   const [screenshotIdx, setScreenshotIdx] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'features' | 'reviews' | 'comments' | 'support'>('description');
   const [commentText, setCommentText] = useState('');
+  const [postedComments, setPostedComments] = useState<Array<{ id: number; user: string; avatar: string; date: string; text: string; replies: any[] }>>([]);
+  const [helpful, setHelpful] = useState<Set<number>>(new Set());
+  const [wishlisted, setWishlisted] = useState(false);
+
+  const toggleWishlist = () => {
+    setWishlisted(v => !v);
+    toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+  };
+  const share = async () => {
+    const url = window.location.href;
+    try {
+      if (navigator.share) await navigator.share({ url, title: document.title });
+      else { await navigator.clipboard.writeText(url); toast.success('Link copied'); }
+    } catch { /* user cancelled */ }
+  };
+  const postComment = () => {
+    if (!commentText.trim()) { toast.error('Comment cannot be empty'); return; }
+    setPostedComments(p => [{ id: Date.now(), user: 'You', avatar: 'YO', date: 'just now', text: commentText.trim(), replies: [] }, ...p]);
+    setCommentText('');
+    toast.success('Comment posted');
+  };
+  const toggleHelpful = (id: number) => {
+    setHelpful(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  };
 
   const { data: product, isLoading } = useProduct(id);
   const { data: reviews = [] } = useProductReviews(id);
