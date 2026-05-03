@@ -19,7 +19,7 @@ const ProductPage = () => {
   const [activeTab, setActiveTab] = useState<'description' | 'features' | 'reviews' | 'comments' | 'support'>('description');
   const [commentText, setCommentText] = useState('');
   const [postedComments, setPostedComments] = useState<Array<{ id: number; user: string; avatar: string; date: string; text: string; replies: any[] }>>([]);
-  const [helpful, setHelpful] = useState<Set<number>>(new Set());
+  const [helpful, setHelpful] = useState<Set<string>>(new Set());
   const [wishlisted, setWishlisted] = useState(false);
 
   const toggleWishlist = () => {
@@ -39,7 +39,7 @@ const ProductPage = () => {
     setCommentText('');
     toast.success('Comment posted');
   };
-  const toggleHelpful = (id: number) => {
+  const toggleHelpful = (id: string) => {
     setHelpful(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   };
 
@@ -268,7 +268,7 @@ const ProductPage = () => {
                           <p className="text-sm font-medium text-foreground">Live Demo Available</p>
                           <p className="text-xs text-muted-foreground">Try before you buy — full demo with sample data</p>
                         </div>
-                        <button onClick={() => { toast.info('Opening live demo…'); window.open(`https://demo.saashub.io/${product.slug ?? product.id}`, '_blank', 'noopener'); }} className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+                        <button onClick={() => { toast.info('Opening live demo…'); window.open(`https://demo.saashub.io/${product.id}`, '_blank', 'noopener'); }} className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90">
                           <ExternalLink className="h-3.5 w-3.5" />
                           View Demo
                         </button>
@@ -354,8 +354,8 @@ const ProductPage = () => {
                                   </div>
                                 </div>
                               </div>
-                              <button onClick={() => toggleHelpful(r.id)} aria-pressed={helpful.has(r.id)} className={`flex items-center gap-1 text-xs transition-colors ${helpful.has(r.id) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-                                <ThumbsUp className={`h-3 w-3 ${helpful.has(r.id) ? 'fill-primary' : ''}`} /> {helpful.has(r.id) ? 'Helpful' : 'Helpful'}
+                              <button onClick={() => toggleHelpful(String(r.id))} aria-pressed={helpful.has(String(r.id))} className={`flex items-center gap-1 text-xs transition-colors ${helpful.has(String(r.id)) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                                <ThumbsUp className={`h-3 w-3 ${helpful.has(String(r.id)) ? 'fill-primary' : ''}`} /> Helpful
                               </button>
                             </div>
                             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.comment}</p>
