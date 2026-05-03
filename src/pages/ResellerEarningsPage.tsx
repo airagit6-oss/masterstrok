@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Copy, Check, Download, ArrowUpRight } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
   Bar, BarChart,
@@ -68,7 +69,19 @@ const ResellerEarningsPage = () => {
           <h2 className="text-xl font-semibold" style={{ color: '#1a1a1a' }}>Payouts</h2>
           <p className="text-sm mt-0.5" style={{ color: '#6d7175' }}>Track your earnings, commissions, and payment history</p>
         </div>
-        <button className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors" style={{ borderColor: '#c9cccf', color: '#1a1a1a' }}>
+        <button
+          onClick={() => {
+            const csv = ['Source,Type,Amount,Date,Status', ...earningsHistory.map(e => `"${e.source}",${e.type},${e.amount},${e.date},${e.status}`)].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'payouts.csv'; a.click();
+            URL.revokeObjectURL(url);
+            toast.success('Payouts exported');
+          }}
+          className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors"
+          style={{ borderColor: '#c9cccf', color: '#1a1a1a' }}
+        >
           <Download className="h-4 w-4" />
           Export
         </button>
