@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrendingUp, DollarSign, Users, Package, ArrowUpRight, ArrowDownRight, Store, CreditCard, Eye } from 'lucide-react';
 import {
   Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
