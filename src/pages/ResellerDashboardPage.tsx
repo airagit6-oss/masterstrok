@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrendingUp, DollarSign, Users, Package, ArrowUpRight, ArrowDownRight, Store, CreditCard, Eye } from 'lucide-react';
 import {
   Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -35,6 +36,8 @@ const recentActivity = [
 
 const ResellerDashboardPage = () => {
   const [period] = useState('This month');
+  const navigate = useNavigate();
+  const quickActionRoutes = ['/reseller/products', '/reseller/leads', '/reseller/earnings'];
 
   const kpis = [
     { label: 'Total Earnings', value: '$12,480', change: '+18.2%', up: true, icon: DollarSign, iconBg: '#e4f3e8', iconColor: '#008060' },
@@ -133,7 +136,7 @@ const ResellerDashboardPage = () => {
       <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: '#e1e3e5' }}>
         <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: '#e1e3e5' }}>
           <h3 className="text-sm font-semibold" style={{ color: '#1a1a1a' }}>App Performance</h3>
-          <button className="text-xs font-medium" style={{ color: '#008060' }}>View all →</button>
+          <button onClick={() => navigate('/reseller/products')} className="text-xs font-medium" style={{ color: '#008060' }}>View all →</button>
         </div>
         <table className="w-full text-sm">
           <thead>
@@ -176,7 +179,7 @@ const ResellerDashboardPage = () => {
           { title: 'Invite a client', desc: 'Send referral link to a new merchant', icon: Users, color: '#0070f3' },
           { title: 'View payouts', desc: 'Check your earnings and payment history', icon: CreditCard, color: '#b98900' },
         ].map((action, i) => (
-          <button key={i} className="bg-white rounded-xl border p-5 text-left hover:shadow-md transition-all group" style={{ borderColor: '#e1e3e5' }}>
+          <button key={i} onClick={() => navigate(quickActionRoutes[i])} className="bg-white rounded-xl border p-5 text-left hover:shadow-md transition-all group" style={{ borderColor: '#e1e3e5' }}>
             <div className="h-10 w-10 rounded-xl flex items-center justify-center mb-3" style={{ background: `${action.color}15` }}>
               <action.icon className="h-5 w-5" style={{ color: action.color }} />
             </div>

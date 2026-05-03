@@ -7,6 +7,7 @@ import {
 import { Navbar } from '@/components/marketplace/Navbar';
 import { useCart } from '@/contexts/CartContext';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { useProduct, useProductReviews, useRelatedProducts } from '@/hooks/useProduct';
 
 const ProductPage = () => {
@@ -17,6 +18,30 @@ const ProductPage = () => {
   const [screenshotIdx, setScreenshotIdx] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'features' | 'reviews' | 'comments' | 'support'>('description');
   const [commentText, setCommentText] = useState('');
+  const [postedComments, setPostedComments] = useState<Array<{ id: number; user: string; avatar: string; date: string; text: string; replies: any[] }>>([]);
+  const [helpful, setHelpful] = useState<Set<string>>(new Set());
+  const [wishlisted, setWishlisted] = useState(false);
+
+  const toggleWishlist = () => {
+    setWishlisted(v => !v);
+    toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+  };
+  const share = async () => {
+    const url = window.location.href;
+    try {
+      if (navigator.share) await navigator.share({ url, title: document.title });
+      else { await navigator.clipboard.writeText(url); toast.success('Link copied'); }
+    } catch { /* user cancelled */ }
+  };
+  const postComment = () => {
+    if (!commentText.trim()) { toast.error('Comment cannot be empty'); return; }
+    setPostedComments(p => [{ id: Date.now(), user: 'You', avatar: 'YO', date: 'just now', text: commentText.trim(), replies: [] }, ...p]);
+    setCommentText('');
+    toast.success('Comment posted');
+  };
+  const toggleHelpful = (id: string) => {
+    setHelpful(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  };
 
   const { data: product, isLoading } = useProduct(id);
   const { data: reviews = [] } = useProductReviews(id);
@@ -100,11 +125,11 @@ const ProductPage = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button className="flex h-10 items-center gap-2 rounded-lg border border-border px-4 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
-                  <Heart className="h-4 w-4" />
-                  <span className="hidden sm:inline">Wishlist</span>
+                <button onClick={toggleWishlist} aria-pressed={wishlisted} className={`flex h-10 items-center gap-2 rounded-lg border border-border px-4 text-sm transition-colors hover:bg-accent ${wishlisted ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                  <Heart className={`h-4 w-4 ${wishlisted ? 'fill-primary text-primary' : ''}`} />
+                  <span className="hidden sm:inline">{wishlisted ? 'Saved' : 'Wishlist'}</span>
                 </button>
-                <button className="flex h-10 items-center gap-2 rounded-lg border border-border px-4 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+                <button onClick={share} className="flex h-10 items-center gap-2 rounded-lg border border-border px-4 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                   <Share2 className="h-4 w-4" />
                   <span className="hidden sm:inline">Share</span>
                 </button>
@@ -243,7 +268,7 @@ const ProductPage = () => {
                           <p className="text-sm font-medium text-foreground">Live Demo Available</p>
                           <p className="text-xs text-muted-foreground">Try before you buy — full demo with sample data</p>
                         </div>
-                        <button className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+                        <button onClick={() => { toast.info('Opening live demo…'); window.open(`https://demo.saashub.io/${product.id}`, '_blank', 'noopener'); }} className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90">
                           <ExternalLink className="h-3.5 w-3.5" />
                           View Demo
                         </button>
@@ -329,8 +354,8 @@ const ProductPage = () => {
                                   </div>
                                 </div>
                               </div>
-                              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                                <ThumbsUp className="h-3 w-3" /> Helpful
+                              <button onClick={() => toggleHelpful(String(r.id))} aria-pressed={helpful.has(String(r.id))} className={`flex items-center gap-1 text-xs transition-colors ${helpful.has(String(r.id)) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                                <ThumbsUp className={`h-3 w-3 ${helpful.has(String(r.id)) ? 'fill-primary' : ''}`} /> Helpful
                               </button>
                             </div>
                             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.comment}</p>
@@ -343,7 +368,7 @@ const ProductPage = () => {
                   {/* COMMENTS TAB */}
                   {activeTab === 'comments' && (
                     <div className="space-y-6">
-                      <h2 className="text-lg font-bold text-foreground">Comments ({comments.length})</h2>
+                      <h2 className="text-lg font-bold text-foreground">Comments ({comments.length + postedComments.length})</h2>
 
                       {/* New comment */}
                       <div className="rounded-lg border border-border bg-card p-4">
@@ -355,7 +380,7 @@ const ProductPage = () => {
                           rows={3}
                         />
                         <div className="mt-2 flex justify-end">
-                          <button className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+                          <button onClick={postComment} disabled={!commentText.trim()} className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50">
                             Post Comment
                           </button>
                         </div>
@@ -363,7 +388,7 @@ const ProductPage = () => {
 
                       {/* Comments list */}
                       <div className="space-y-4">
-                        {comments.map(c => (
+                        {[...postedComments, ...comments].map(c => (
                           <div key={c.id} className="rounded-lg border border-border bg-card p-5">
                             <div className="flex items-center gap-3">
                               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-xs font-bold text-foreground">{c.avatar}</div>
@@ -373,7 +398,7 @@ const ProductPage = () => {
                               </div>
                             </div>
                             <p className="mt-3 text-sm text-muted-foreground">{c.text}</p>
-                            <button className="mt-2 flex items-center gap-1 text-xs text-primary hover:underline">
+                            <button onClick={() => setActiveTab('comments')} className="mt-2 flex items-center gap-1 text-xs text-primary hover:underline" onClickCapture={(e) => { e.preventDefault(); const ta = document.querySelector<HTMLTextAreaElement>('textarea'); if (ta) { ta.focus(); ta.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }}>
                               <Reply className="h-3 w-3" /> Reply
                             </button>
 
@@ -522,7 +547,7 @@ const ProductPage = () => {
                       </div>
                     ))}
                   </div>
-                  <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+                  <button onClick={() => navigate('/support')} className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                     <MessageSquare className="h-3.5 w-3.5" /> Contact Author
                   </button>
                 </div>

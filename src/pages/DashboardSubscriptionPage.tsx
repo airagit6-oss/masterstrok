@@ -1,9 +1,23 @@
 import { Link } from 'react-router-dom';
 import { CreditCard, Zap, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 const DashboardSubscriptionPage = () => {
-  const { hasSubscription } = useAuth();
+  const { hasSubscription, logout } = useAuth();
+  const [cancelling, setCancelling] = useState(false);
+
+  const cancel = () => {
+    if (!window.confirm('Cancel your subscription? You will keep access until your billing period ends.')) return;
+    setCancelling(true);
+    setTimeout(() => {
+      localStorage.removeItem('saashub_sub');
+      toast.success('Subscription cancelled. Access remains until May 1, 2026.');
+      setCancelling(false);
+      window.location.reload();
+    }, 600);
+  };
 
   return (
     <div className="space-y-6">
@@ -36,8 +50,8 @@ const DashboardSubscriptionPage = () => {
               <p className="font-medium text-foreground">Cancel Subscription</p>
               <p className="text-sm text-muted-foreground mt-0.5">You'll retain access until the end of your billing period.</p>
             </div>
-            <button className="rounded-lg border border-destructive/50 px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors">
-              Cancel
+            <button onClick={cancel} disabled={cancelling} className="rounded-lg border border-destructive/50 px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50">
+              {cancelling ? 'Cancelling…' : 'Cancel'}
             </button>
           </div>
         </div>

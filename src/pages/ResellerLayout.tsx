@@ -164,6 +164,7 @@ const ResellerSidebar = () => {
 
 const ResellerLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const currentPage = allItems.find(n => location.pathname.startsWith(n.to));
   const pageTitle = currentPage?.label ?? 'Partner Dashboard';
@@ -182,11 +183,11 @@ const ResellerLayout = () => {
               <button onClick={() => setSearchOpen(!searchOpen)} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
                 <Search className="h-4 w-4" style={{ color: '#6d7175' }} />
               </button>
-              <button className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors relative">
+              <button onClick={() => navigate('/dashboard/notifications')} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors relative" aria-label="Notifications">
                 <Bell className="h-4 w-4" style={{ color: '#6d7175' }} />
                 <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full" style={{ background: '#e51c00' }} />
               </button>
-              <button className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
+              <button onClick={() => window.open('https://docs.lovable.dev', '_blank', 'noopener')} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" aria-label="Help">
                 <HelpCircle className="h-4 w-4" style={{ color: '#6d7175' }} />
               </button>
             </div>
