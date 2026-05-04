@@ -1,8 +1,37 @@
 import { Bell } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
+const STORAGE_KEY = 'saashub_notification_prefs';
+type Prefs = { email: boolean; push: boolean; marketing: boolean; billing: boolean };
+const defaultPrefs: Prefs = { email: true, push: true, marketing: false, billing: true };
+
+function loadPrefs(): Prefs {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? { ...defaultPrefs, ...JSON.parse(raw) } : defaultPrefs;
+  } catch {
+    return defaultPrefs;
+  }
+}
 
 const NotificationsPage = () => {
-  const [prefs, setPrefs] = useState({ email: true, push: true, marketing: false, billing: true });
+  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)); } catch { /* ignore */ }
+  }, [prefs]);
+
+  const handleSave = () => {
+    setSaving(true);
+    setTimeout(() => {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)); } catch { /* ignore */ }
+      setSaving(false);
+      toast.success('Notification preferences saved');
+    }, 400);
+  };
+
   return (
     <div className="max-w-2xl">
       <h1 className="text-2xl font-bold text-foreground mb-1">Notifications</h1>
@@ -23,13 +52,24 @@ const NotificationsPage = () => {
               </div>
             </div>
             <button
-              onClick={() => setPrefs(p => ({ ...p, [item.key]: !p[item.key as keyof typeof p] }))}
-              className={`relative h-5 w-9 rounded-full transition-colors ${prefs[item.key as keyof typeof prefs] ? 'bg-primary' : 'bg-muted'}`}
+              type="button"
+              aria-pressed={prefs[item.key as keyof Prefs]}
+              onClick={() => setPrefs(p => ({ ...p, [item.key]: !p[item.key as keyof Prefs] }))}
+              className={`relative h-5 w-9 rounded-full transition-colors ${prefs[item.key as keyof Prefs] ? 'bg-primary' : 'bg-muted'}`}
             >
-              <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-background transition-transform ${prefs[item.key as keyof typeof prefs] ? 'translate-x-4' : 'translate-x-0.5'}`} />
+              <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-background transition-transform ${prefs[item.key as keyof Prefs] ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </button>
           </div>
         ))}
+      </div>
+      <div className="mt-4 flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+        >
+          {saving ? 'Saving…' : 'Save preferences'}
+        </button>
       </div>
     </div>
   );
