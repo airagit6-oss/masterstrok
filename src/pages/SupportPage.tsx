@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Headset, Mail, MessageSquare, BookOpen } from 'lucide-react';
+import { Mail, MessageSquare, BookOpen } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const faqs = [
   { q: 'How do I access my purchased apps?', a: 'Go to Dashboard → My Apps and click on any app to launch it.' },
@@ -33,18 +34,18 @@ const SupportPage = () => {
         {/* Contact options */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { icon: Mail, title: 'Email Support', desc: 'support@saashub.io', action: 'mailto:support@saashub.io' },
-            { icon: MessageSquare, title: 'Live Chat', desc: 'Available 9am–6pm IST', action: '#' },
-            { icon: BookOpen, title: 'Documentation', desc: 'Browse our docs', action: '#' },
+            { icon: Mail, title: 'Email Support', desc: 'support@saashub.io', action: () => { window.location.href = 'mailto:support@saashub.io'; } },
+            { icon: MessageSquare, title: 'Live Chat', desc: 'Available 9am–6pm IST', action: () => toast.info('Live chat opens 9am–6pm IST. Drop us an email meanwhile.') },
+            { icon: BookOpen, title: 'Documentation', desc: 'Browse our docs', action: () => window.open('https://docs.lovable.dev', '_blank', 'noopener,noreferrer') },
           ].map(c => (
-            <a key={c.title} href={c.action}
+            <button key={c.title} onClick={c.action} type="button"
               className="rounded-xl border border-border bg-card p-5 flex flex-col items-center text-center hover:bg-accent transition-colors">
               <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                 <c.icon className="h-6 w-6 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground">{c.title}</h3>
               <p className="text-sm text-muted-foreground mt-1">{c.desc}</p>
-            </a>
+            </button>
           ))}
         </div>
 
@@ -81,7 +82,15 @@ const SupportPage = () => {
               <p className="text-sm text-muted-foreground mt-1">We'll get back to you within 24 hours.</p>
             </div>
           ) : (
-            <form onSubmit={e => { e.preventDefault(); setSent(true); }} className="rounded-xl border border-border bg-card p-6 space-y-4">
+            <form onSubmit={e => {
+              e.preventDefault();
+              const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+              if (form.name.trim().length < 2) return toast.error('Please enter your name');
+              if (!emailOk) return toast.error('Please enter a valid email');
+              if (form.message.trim().length < 5) return toast.error('Message is too short');
+              setSent(true);
+              toast.success('Message sent');
+            }} className="rounded-xl border border-border bg-card p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">Name</label>
                 <input type="text" required placeholder="Your name" className={inputClass}
