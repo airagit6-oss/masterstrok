@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   LayoutDashboard, Users, UserPlus, Kanban, BookUser, CreditCard,
   Package, TrendingUp, Settings, LogOut, Bell, Search,
@@ -166,8 +166,12 @@ const ResellerLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const currentPage = allItems.find(n => location.pathname.startsWith(n.to));
   const pageTitle = currentPage?.label ?? 'Partner Dashboard';
+  const matches = searchQuery.trim()
+    ? allItems.filter(item => item.label.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+    : [];
 
   return (
     <SidebarProvider>
@@ -180,7 +184,29 @@ const ResellerLayout = () => {
               <h1 className="text-[15px] font-semibold" style={{ color: '#1a1a1a' }}>{pageTitle}</h1>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => setSearchOpen(!searchOpen)} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
+              {searchOpen && (
+                <div className="relative">
+                  <input
+                    autoFocus
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && matches[0]) navigate(matches[0].to); }}
+                    placeholder="Search pages..."
+                    className="h-8 w-48 rounded-lg border px-3 text-[13px] outline-none"
+                    style={{ borderColor: '#e1e3e5', color: '#1a1a1a' }}
+                  />
+                  {matches.length > 0 && (
+                    <div className="absolute right-0 top-9 z-50 w-48 rounded-lg border bg-white py-1 shadow-lg" style={{ borderColor: '#e1e3e5' }}>
+                      {matches.map(item => (
+                        <Link key={item.to} to={item.to} onClick={() => { setSearchOpen(false); setSearchQuery(''); }} className="block px-3 py-2 text-[13px] hover:bg-gray-100" style={{ color: '#1a1a1a' }}>
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              <button onClick={() => setSearchOpen(!searchOpen)} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" aria-label="Search">
                 <Search className="h-4 w-4" style={{ color: '#6d7175' }} />
               </button>
               <button onClick={() => navigate('/dashboard/notifications')} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors relative" aria-label="Notifications">
