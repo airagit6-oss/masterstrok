@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -81,8 +82,35 @@ import ReviewsPage from "./pages/admin/ReviewsPage";
 import CouponsPage from "./pages/admin/CouponsPage";
 import ReportsPage from "./pages/admin/ReportsPage";
 import EmailTemplatesPage from "./pages/admin/EmailTemplatesPage";
+import { products } from "@/lib/marketplaceData";
 
 const queryClient = new QueryClient();
+
+const setMeta = (selector: string, value: string) => {
+  const tag = document.head.querySelector(selector);
+  if (tag) tag.setAttribute('content', value);
+};
+
+const RouteMeta = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const product = pathname.startsWith('/product/')
+      ? products.find(p => p.id === pathname.split('/').pop())
+      : undefined;
+    const title = product ? `${product.name} | SaaSHub` : pathname.startsWith('/admin') ? 'Boss Panel | SaaSHub' : pathname.startsWith('/reseller') ? 'Partner Panel | SaaSHub' : pathname.startsWith('/dashboard') ? 'User Dashboard | SaaSHub' : 'SaaSHub Marketplace';
+    const description = product ? product.shortDescription : 'Premium SaaS marketplace with user, reseller, and boss dashboards for apps, orders, reports, and monitoring.';
+    document.title = title;
+    setMeta('meta[name="description"]', description);
+    setMeta('meta[property="og:title"]', title);
+    setMeta('meta[name="twitter:title"]', title);
+    setMeta('meta[property="og:description"]', description);
+    setMeta('meta[name="twitter:description"]', description);
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `${window.location.origin}${pathname}`);
+  }, [pathname]);
+
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -92,6 +120,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <RouteMeta />
             <Routes>
               {/* Public routes */}
               <Route path="/login" element={<LoginPage />} />
