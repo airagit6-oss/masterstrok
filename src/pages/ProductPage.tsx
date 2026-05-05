@@ -43,11 +43,37 @@ const ProductPage = () => {
     setHelpful(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   };
 
-  const { data: product, isLoading } = useProduct(id);
+  const { data: product, isLoading, isError, refetch } = useProduct(id);
   const { data: reviews = [] } = useProductReviews(id);
   const { data: related = [] } = useRelatedProducts(id);
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex h-[60vh] items-center justify-center pt-16">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground">Loading product…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex h-[60vh] items-center justify-center pt-16">
+          <div className="text-center">
+            <p className="text-lg text-muted-foreground">Product could not be loaded</p>
+            <button onClick={() => refetch()} className="mt-4 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90">Retry</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

@@ -15,6 +15,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isReseller: boolean;
   login: (email: string, password: string, role?: 'user' | 'admin' | 'reseller') => void;
+  updateProfile: (profile: Pick<AuthUser, 'name' | 'email'>) => void;
   logout: () => void;
   activateSubscription: () => void;
 }
@@ -42,15 +43,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [hasSubscription, setHasSubscription] = useState<boolean>(loadSub);
 
   const login = useCallback((email: string, _password: string, role: 'user' | 'admin' | 'reseller' = 'user') => {
+    const safeEmail = email.trim().toLowerCase();
     const newUser: AuthUser = {
       id: 'u_' + crypto.randomUUID().replace(/-/g, '').slice(0, 9),
-      name: email.split('@')[0],
-      email,
+      name: safeEmail.split('@')[0] || 'User',
+      email: safeEmail,
       role,
     };
     setUser(newUser);
     localStorage.setItem(AUTH_KEY, JSON.stringify(newUser));
-    audit.login(newUser.id, { email, role });
+    audit.login(newUser.id, { email: safeEmail, role });
+  }, []);
+
+  const updateProfile = useCallback((profile: Pick<AuthUser, 'name' | 'email'>) => {
+    setUser(current => {
+      if (!current) return current;
+      const updated = { ...current, name: profile.name.trim(), email: profile.email.trim().toLowerCase() };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
+      return updated;
+    });
   }, []);
 
   const logout = useCallback(() => {
@@ -76,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdmin: user?.role === 'admin',
         isReseller: user?.role === 'reseller' || user?.role === 'admin',
         login,
+        updateProfile,
         logout,
         activateSubscription,
       }}

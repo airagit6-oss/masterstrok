@@ -1,17 +1,20 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { generateApps } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 export default function AppsPage() {
   const [apps] = useState(generateApps());
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-3">
       <h2 className="text-sm font-medium text-foreground">Apps Monitoring</h2>
       <div className="grid grid-cols-1 gap-2">
         {apps.map((app) => (
-          <div key={app.name} className="dd-panel p-3 flex items-center gap-4 hover:bg-accent/30 cursor-pointer transition-colors">
+          <div key={app.name} role="button" tabIndex={0} onClick={() => { toast.info(`${app.name} monitor selected`); navigate('/admin/metrics'); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/admin/metrics'); }} className="dd-panel p-3 flex items-center gap-4 hover:bg-accent/30 cursor-pointer transition-colors">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm font-medium text-foreground">{app.name}</span>

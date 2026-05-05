@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ name: user?.name ?? '', email: user?.email ?? '' });
@@ -18,11 +18,7 @@ const ProfilePage = () => {
     setSaving(true);
     setTimeout(() => {
       try {
-        const raw = localStorage.getItem('saashub_auth');
-        if (raw) {
-          const u = JSON.parse(raw);
-          localStorage.setItem('saashub_auth', JSON.stringify({ ...u, name: form.name, email: form.email }));
-        }
+        updateProfile({ name: form.name, email: form.email });
         toast.success('Profile updated');
         setEditing(false);
       } catch {

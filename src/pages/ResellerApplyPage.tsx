@@ -15,6 +15,9 @@ const ResellerApplyPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.name.trim().length < 2) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return;
+    if (form.message.trim().length < 5) return;
     setSubmitted(true);
     setTimeout(() => navigate('/'), 3000);
   };
