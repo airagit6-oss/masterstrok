@@ -44,6 +44,8 @@ const LoginPage = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return;
+    if (password.length < 1) return;
     const role = isBossLogin ? 'admin' : isResellerLogin ? 'reseller' : 'user';
     login(email, password, role);
     navigate(isBossLogin ? '/admin' : isResellerLogin ? '/reseller/dashboard' : '/');
@@ -141,6 +143,7 @@ const LoginPage = () => {
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField('none')}
                 placeholder="email@domain.com"
+                required
                 style={{
                   width: '100%', height: '42px', padding: '0 12px', fontSize: '14px',
                   border: '1.5px solid #ccc', borderRadius: '6px', outline: 'none', boxSizing: 'border-box',
@@ -171,6 +174,7 @@ const LoginPage = () => {
                 onChange={e => setPassword(e.target.value)}
                 onFocus={() => setFocusedField('password')}
                 onBlur={() => setFocusedField('none')}
+                required
                 style={{
                   width: '100%', height: '42px', padding: '0 12px', fontSize: '14px',
                   border: '1.5px solid #ccc', borderRadius: '6px', outline: 'none', boxSizing: 'border-box',
