@@ -12,6 +12,9 @@ const SignupPage = () => {
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    if (name.trim().length < 2) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return;
+    if (password.length < 8) return;
     login(email, password, 'user');
     navigate('/');
   };
