@@ -8,11 +8,11 @@ interface Props {
 
 const menuItems = [
   { label: 'Home', icon: Home, path: '/' },
-  { label: 'Categories', icon: Grid3X3, path: '/categories' },
-  { label: 'My Apps', icon: AppWindow, path: '/my-apps' },
-  { label: 'Favorites', icon: Heart, path: '/favorites' },
-  { label: 'Recently Used', icon: Clock, path: '/recent' },
-  { label: 'Subscriptions', icon: CreditCard, path: '/subscriptions' },
+  { label: 'Categories', icon: Grid3X3, path: '/search' },
+  { label: 'My Apps', icon: AppWindow, path: '/dashboard/apps' },
+  { label: 'Favorites', icon: Heart, path: '/dashboard/favorites' },
+  { label: 'Recently Used', icon: Clock, path: '/dashboard/recent' },
+  { label: 'Subscriptions', icon: CreditCard, path: '/dashboard/subscription' },
 ];
 
 export const MarketplaceSidebar = ({ open, onClose }: Props) => {
@@ -53,6 +53,7 @@ export const MarketplaceSidebar = ({ open, onClose }: Props) => {
                 <Link
                   key={item.label}
                   to={item.path}
+                  onClick={onClose}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                     active
                       ? 'bg-primary/10 text-primary font-medium'
