@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 import { Package, ExternalLink } from 'lucide-react';
 
 const mockOrders = [
-  { id: 'ORD-001', product: 'EduFlow Pro', plan: 'Yearly', amount: 290, date: '2026-03-15', status: 'Active' },
-  { id: 'ORD-002', product: 'HotelNest', plan: 'Monthly', amount: 79, date: '2026-03-01', status: 'Active' },
-  { id: 'ORD-003', product: 'ShopEngine', plan: 'Lifetime', amount: 499, date: '2026-01-20', status: 'Completed' },
+  { id: 'ORD-001', productId: 'prod-1', product: 'EduFlow Pro', plan: 'Yearly', amount: 290, date: '2026-03-15', status: 'Active' },
+  { id: 'ORD-002', productId: 'prod-3', product: 'HotelNest', plan: 'Monthly', amount: 79, date: '2026-03-01', status: 'Active' },
+  { id: 'ORD-003', productId: 'prod-4', product: 'ShopEngine', plan: 'Lifetime', amount: 499, date: '2026-01-20', status: 'Completed' },
 ];
 
 const OrdersPage = () => {
@@ -52,7 +52,7 @@ const OrdersPage = () => {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <Link to={`/app/${order.id.toLowerCase()}`} className="flex items-center gap-1 text-xs text-primary hover:underline">
+                    <Link to={`/app/${order.productId}`} className="flex items-center gap-1 text-xs text-primary hover:underline">
                       Open <ExternalLink className="h-3 w-3" />
                     </Link>
                   </td>
