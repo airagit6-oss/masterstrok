@@ -14,7 +14,7 @@ export default function AppsPage() {
       <h2 className="text-sm font-medium text-foreground">Apps Monitoring</h2>
       <div className="grid grid-cols-1 gap-2">
         {apps.map((app) => (
-          <button key={app.name} type="button" onClick={() => { toast.info(`${app.name} monitor selected`); navigate('/admin/metrics'); }} className="dd-panel p-3 flex w-full items-center gap-4 text-left hover:bg-accent/30 cursor-pointer transition-colors">
+          <div key={app.name} role="button" tabIndex={0} onClick={() => { toast.info(`${app.name} monitor selected`); navigate('/admin/metrics'); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/admin/metrics'); }} className="dd-panel p-3 flex items-center gap-4 hover:bg-accent/30 cursor-pointer transition-colors">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm font-medium text-foreground">{app.name}</span>
@@ -41,7 +41,7 @@ export default function AppsPage() {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </button>
+          </div>
         ))}
       </div>
     </div>
