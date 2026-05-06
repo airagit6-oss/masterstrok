@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, ShoppingCart, ShoppingBag, Zap, Heart, Star, Bookmark } from 'lucide-react';
+import { Eye, ShoppingCart, ShoppingBag, Zap, Heart, Star } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Product } from '@/lib/marketplaceData';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { favorites, subscribeUserActivity } from '@/lib/userActivity';
 
 interface Props {
   product: Product;
@@ -11,8 +13,18 @@ interface Props {
 
 export const ProductCard = ({ product }: Props) => {
   const [hovered, setHovered] = useState(false);
+  const [isFav, setIsFav] = useState(() => favorites.has(product.id));
   const { addToCart } = useCart();
   const { hasSubscription } = useAuth();
+
+  useEffect(() => subscribeUserActivity(() => setIsFav(favorites.has(product.id))), [product.id]);
+
+  const toggleFav = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const nowFav = favorites.toggle(product.id);
+    toast.success(nowFav ? `Added ${product.name} to favorites` : `Removed ${product.name} from favorites`);
+  };
 
   return (
     <div
@@ -34,18 +46,12 @@ export const ProductCard = ({ product }: Props) => {
           {hovered && (
             <div className="absolute inset-0 flex items-center justify-center gap-2 bg-background/70 backdrop-blur-sm animate-in fade-in duration-200">
               <button
-                onClick={(e) => { e.stopPropagation(); }}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-card/90 text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
-                title="Wishlist"
+                onClick={toggleFav}
+                aria-pressed={isFav}
+                className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${isFav ? 'bg-primary text-primary-foreground' : 'bg-card/90 text-muted-foreground hover:bg-primary hover:text-primary-foreground'}`}
+                title={isFav ? 'Remove from favorites' : 'Add to favorites'}
               >
-                <Heart className="h-4 w-4" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); }}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-card/90 text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
-                title="Favorite"
-              >
-                <Bookmark className="h-4 w-4" />
+                <Heart className={`h-4 w-4 ${isFav ? 'fill-current' : ''}`} />
               </button>
               <Link
                 to={`/product/${product.id}`}

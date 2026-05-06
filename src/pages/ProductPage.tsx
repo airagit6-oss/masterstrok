@@ -6,9 +6,10 @@ import {
 } from 'lucide-react';
 import { Navbar } from '@/components/marketplace/Navbar';
 import { useCart } from '@/contexts/CartContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useProduct, useProductReviews, useRelatedProducts } from '@/hooks/useProduct';
+import { favorites, recent, subscribeUserActivity } from '@/lib/userActivity';
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -20,11 +21,20 @@ const ProductPage = () => {
   const [commentText, setCommentText] = useState('');
   const [postedComments, setPostedComments] = useState<Array<{ id: number; user: string; avatar: string; date: string; text: string; replies: any[] }>>([]);
   const [helpful, setHelpful] = useState<Set<string>>(new Set());
-  const [wishlisted, setWishlisted] = useState(false);
+  const [wishlisted, setWishlisted] = useState(() => (id ? favorites.has(id) : false));
+
+  useEffect(() => {
+    if (!id) return;
+    setWishlisted(favorites.has(id));
+    return subscribeUserActivity(() => setWishlisted(favorites.has(id)));
+  }, [id]);
+
+  useEffect(() => { if (id) recent.push(id); }, [id]);
 
   const toggleWishlist = () => {
-    setWishlisted(v => !v);
-    toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+    if (!id) return;
+    const nowFav = favorites.toggle(id);
+    toast.success(nowFav ? 'Added to favorites' : 'Removed from favorites');
   };
   const share = async () => {
     const url = window.location.href;
