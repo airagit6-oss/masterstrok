@@ -6,10 +6,9 @@ import type { Product, Review } from './marketplaceData';
 const API_BASE = '/api';
 export const API_V1 = '/api/v1';
 
-async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(url, options);
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json() as Promise<T>;
+async function apiFetch<T>(_url: string, _options?: RequestInit): Promise<T> {
+  // Backend not wired in this build — force fallback path in callers.
+  throw new Error('backend_disabled');
 }
 
 // ── Re-export versioned production modules ────────────────────────────────────
