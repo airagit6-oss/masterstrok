@@ -26,10 +26,9 @@ export interface WebhookResult {
   message: string;
 }
 
-async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(url, options);
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json() as Promise<T>;
+async function apiFetch<T>(_url: string, _options?: RequestInit): Promise<T> {
+  // Backend not wired in this build — force fallback path in callers.
+  throw new Error('backend_disabled');
 }
 
 // Basic signature validation stub (client-side demonstration only).
